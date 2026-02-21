@@ -1,0 +1,4 @@
+enum RolUsuario {
+  Admin,
+  Cliente
+}
