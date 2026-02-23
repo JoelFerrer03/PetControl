@@ -1,5 +1,4 @@
-import 'package:petcontrol/dominio/enums/estado_cita.dart';
-
+import 'package:petcontrol/hex/dominio/enums/estado_cita.dart';
 class Cita {
   final String id;
   final String idDueno;

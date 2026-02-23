@@ -1,4 +1,4 @@
-import 'package:petcontrol/dominio/enums/rol_usuario.dart';
+import 'package:petcontrol/hex/dominio/enums/rol_usuario.dart';
 
 class Usuario {
   final String id;
