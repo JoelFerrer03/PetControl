@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-
-
-import 'HomePage.dart';
+import 'package:petcontrol/ui/features/autenticacion/pantallas/bienvenida_pantalla.dart';
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -9,7 +7,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
+      home: const BienvenidaPantalla(),
     );
   }
 }
