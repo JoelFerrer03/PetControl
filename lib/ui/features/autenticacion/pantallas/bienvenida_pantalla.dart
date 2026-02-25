@@ -39,11 +39,16 @@ class BienvenidaPantalla extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset('assets/img/Logo BN.png', height: 400, fit: BoxFit.cover,),
-                    ],
+
+                  Center(
+                    child: SizedBox(
+                      width: 320.79,
+                      height: 190.67,
+                      child: Image.asset(
+                        'assets/img/Logo BN.png',
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -56,8 +61,8 @@ class BienvenidaPantalla extends StatelessWidget {
               child: Column(
                 children: [
                   const Text(
-                    "bienvenido a VetManager",
-                    style: TextStyle(fontSize: 14, color: AppColores.negro),
+                    "Bienvenido a VetManager",
+                    style: TextStyle(fontSize: 15, color: AppColores.negro),
                   ),
                   const SizedBox(height: 15),
                   //Boton
@@ -84,8 +89,8 @@ class BienvenidaPantalla extends StatelessWidget {
                         "Iniciar Sesión",
                         style: TextStyle(
                           //fontFamily: , //preguntar a jero
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
                           color: AppColores.botonTexto,
                         ),
                       ),
@@ -94,23 +99,26 @@ class BienvenidaPantalla extends StatelessWidget {
 
                   const SizedBox(height: 12),
 
-                  Container(child: Text("¿No tienes cuenta?")),
-                  const SizedBox(height: 10),
+                  const Text(
+                    "¿No tienes cuenta?",
+                    style: TextStyle(fontSize: 15),
+                  ),
+                  const SizedBox(height: 13),
 
-                  ElevatedButton(
+                  TextButton(
                     onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const RegisterPantalla(),
+                          builder: (_) => const RegistroPantalla(),
                         ),
                       );
                     },
                     child: const Text(
-                      "Registrate",
+                      'Registrate',
                       style: TextStyle(
-                        //fontFamily: , //preguntar a jero
-                        fontSize: 16,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
                         color: AppColores.textoAzul,
                       ),
                     ),

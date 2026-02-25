@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 class AppColores {
   // Colores principales
   static const Color azul = Color.fromRGBO(61, 164, 197, 1);
-  static const Color verde = Color.fromRGBO(52, 133, 77, 1);
+  static const Color verde = Color.fromRGBO(55, 190, 103, 1);
   static const Color blanco = Color.fromRGBO(255, 255, 255, 1);
-    static const Color azulOscuro = Color.fromRGBO(21, 55, 67, 1);
+  static const Color azulOscuro = Color.fromRGBO(21, 55, 67, 1);
+  static const Color verdeOscuro = Color.fromRGBO(39, 91, 55, 1);
+
 
   static const Color negro = Colors.black;
   // Fondo
