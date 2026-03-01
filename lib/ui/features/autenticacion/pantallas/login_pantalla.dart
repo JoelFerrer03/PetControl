@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petcontrol/ui/core/tema/app_colores.dart';
+import 'package:petcontrol/ui/core/widgets/Boton atras.dart';
 import 'package:petcontrol/ui/features/autenticacion/widgets/formulario_login.dart';
 
 class LoginPantalla extends StatelessWidget {
@@ -85,36 +86,7 @@ class LoginPantalla extends StatelessWidget {
             ),
           ),
 
-          // Boton para volver atras
-          Positioned(
-            top: 16,
-            left: 16,
-            child: GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Container(
-                height: 45,
-                width: 45,
-                decoration: BoxDecoration(
-                  color: AppColores.botonGris,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.arrow_back,
-                  size: 22,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ),
+          const BotonAtras(),
         ],
       ),
     );

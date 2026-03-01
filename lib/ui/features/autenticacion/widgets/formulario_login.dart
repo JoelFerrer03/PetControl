@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petcontrol/ui/core/tema/app_colores.dart';
+import 'package:petcontrol/ui/features/admin/pantallas/home_admin.dart';
 import 'package:petcontrol/ui/features/autenticacion/pantallas/registro_pantalla.dart';
 
 class FormularioLogin extends StatefulWidget {
@@ -10,6 +11,9 @@ class FormularioLogin extends StatefulWidget {
 }
 
 class _FormularioLoginState extends State<FormularioLogin> {
+  static const _correoAdmin = 'admin@admin.com';
+  static const _contrasenaAdmin = 'admin';
+
   final _correoCtrl = TextEditingController();
   final _contrasenaCtrl = TextEditingController();
 
@@ -46,12 +50,25 @@ class _FormularioLoginState extends State<FormularioLogin> {
     // TODO: reemplazar por tu login real (repo/api)
     await Future.delayed(const Duration(milliseconds: 900));
 
+    final correoIngresado = _correoCtrl.text.trim().toLowerCase();
+    final contrasenaIngresada = _contrasenaCtrl.text;
+
     if (!mounted) return;
     setState(() => _isLoading = false);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Login mock correcto: ${_correoCtrl.text}')),
-    );
+    if (correoIngresado == _correoAdmin &&
+        contrasenaIngresada == _contrasenaAdmin) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeAdmin()),
+      );
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      content: Text('Credenciales incorrectas'),
+      backgroundColor: Colors.red,
+    ));
   }
 
   String? _validarCorreo(String value) {
@@ -64,7 +81,9 @@ class _FormularioLoginState extends State<FormularioLogin> {
 
   String? _validarContrasena(String value) {
     if (value.isEmpty) return 'Ingresa tu contraseña';
-    if (value.length < 6) return 'Mínimo 6 caracteres';
+    if (value != _contrasenaAdmin && value.length < 6) {
+      return 'Mínimo 6 caracteres';
+    }
     return null;
   }
 

@@ -23,5 +23,6 @@ class AppColores {
   static const Color botonTexto = Colors.black;
   static const Color botonGris = Color.fromRGBO(217, 217, 217, 1);
 
+  static const Color navbar = Color.fromRGBO(53, 142, 81, 1);
 
 }
