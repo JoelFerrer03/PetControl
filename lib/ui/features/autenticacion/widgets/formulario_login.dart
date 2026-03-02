@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:petcontrol/ui/core/tema/app_colores.dart';
 import 'package:petcontrol/ui/features/admin/pantallas/home_admin.dart';
 import 'package:petcontrol/ui/features/autenticacion/pantallas/registro_pantalla.dart';
+import 'package:petcontrol/ui/features/cliente/pantallas/home_cliente.dart';
 
 class FormularioLogin extends StatefulWidget {
   const FormularioLogin({super.key});
@@ -13,6 +14,9 @@ class FormularioLogin extends StatefulWidget {
 class _FormularioLoginState extends State<FormularioLogin> {
   static const _correoAdmin = 'admin@admin.com';
   static const _contrasenaAdmin = 'admin';
+
+  static const _correoUser = 'user@user.com';
+  static const _contrasenaUser = 'user';
 
   final _correoCtrl = TextEditingController();
   final _contrasenaCtrl = TextEditingController();
@@ -65,6 +69,15 @@ class _FormularioLoginState extends State<FormularioLogin> {
       return;
     }
 
+    if (correoIngresado == _correoUser &&
+        contrasenaIngresada == _contrasenaUser) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeCliente()),
+      );
+      return;
+    }
+
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Credenciales incorrectas'),
       backgroundColor: Colors.red,
@@ -74,6 +87,7 @@ class _FormularioLoginState extends State<FormularioLogin> {
   String? _validarCorreo(String value) {
     final correo = value.trim();
     if (correo.isEmpty) return 'Ingresa tu correo';
+    if (correo.toLowerCase() == _correoUser) return null;
     final regex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
     if (!regex.hasMatch(correo)) return 'Correo no válido';
     return null;
@@ -81,7 +95,8 @@ class _FormularioLoginState extends State<FormularioLogin> {
 
   String? _validarContrasena(String value) {
     if (value.isEmpty) return 'Ingresa tu contraseña';
-    if (value != _contrasenaAdmin && value.length < 6) {
+    if (value == _contrasenaAdmin || value == _contrasenaUser) return null;
+    if (value.length < 6) {
       return 'Mínimo 6 caracteres';
     }
     return null;

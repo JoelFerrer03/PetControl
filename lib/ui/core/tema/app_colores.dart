@@ -13,10 +13,13 @@ class AppColores {
   // Fondo
   static const Color fondoVerde = Color.fromRGBO(54, 167, 92, 1);
   static const Color fondoBlanco = Color.fromRGBO(255, 255, 255, 1);
+  static const Color verdepacientes = Color.fromRGBO(53, 146, 83, 1);
 
   // Texto
   static const Color textoAzul = Color.fromRGBO(61, 175, 210, 1);
   static const Color textoNegro = Colors.black;
+
+
 
   // Botones
   static const Color botonPrincipal = Color.fromRGBO(54, 167, 92, 1);

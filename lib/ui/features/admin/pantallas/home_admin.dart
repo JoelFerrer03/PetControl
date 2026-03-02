@@ -40,7 +40,7 @@ class HomeAdmin extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
 
-                    _menuPrincipalGrid(),
+                    _menuPrincipalGrid(context),
 
                     const SizedBox(height: 24),
 
@@ -64,7 +64,6 @@ class HomeAdmin extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: _bottomNavbar(context),
-
     );
   }
 }
@@ -77,7 +76,7 @@ Widget _header(BuildContext context) {
         children: const [
           CircleAvatar(
             radius: 22,
-            backgroundColor: AppColores.verde,
+            backgroundColor: AppColores.fondoVerde,
             child: Text(
               'N',
               style: TextStyle(
@@ -140,7 +139,6 @@ Widget _filaEstadisticas() {
 }
 
 Widget _tarjetaMetrica({
-
   required IconData icono,
   required String numero,
   required String etiqueta,
@@ -160,26 +158,20 @@ Widget _tarjetaMetrica({
           const SizedBox(height: 6),
           Text(
             numero,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-            ),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 4),
           Text(
             etiqueta,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.black54,
-            ),
+            style: const TextStyle(fontSize: 14, color: Colors.black54),
           ),
         ],
       ),
-    )
+    ),
   );
 }
 
-Widget _menuPrincipalGrid() {
+Widget _menuPrincipalGrid(BuildContext context) {
   return Column(
     children: [
       Row(
@@ -187,25 +179,42 @@ Widget _menuPrincipalGrid() {
           _cardMenuPrincipal(
             icono: Icons.pets_outlined,
             titulo: 'Pacientes',
-            subtitulo: 'Gestionar mascotas'
+            subtitulo: 'Gestionar mascotas',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const VistaPacientesAdmin()),
+              );
+            },
           ),
-          const SizedBox(width: 15,),
+          const SizedBox(width: 15),
 
           _cardMenuPrincipal(
             icono: Icons.calendar_month_outlined,
             titulo: 'Citas',
             subtitulo: 'Agendar y consultar',
-          )
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const VistaCitaAdmin()),
+              );
+            },
+          ),
         ],
       ),
       const SizedBox(height: 20),
       Row(
         children: [
-          
           _cardMenuPrincipal(
             icono: Icons.assignment_outlined,
             titulo: 'Historial Medico',
             subtitulo: 'Registros clinicos',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const HistorialMedicoAdmin()),
+              );
+            },
           ),
 
           const SizedBox(width: 12),
@@ -213,10 +222,15 @@ Widget _menuPrincipalGrid() {
             icono: Icons.medical_services_outlined,
             titulo: 'Personal medico',
             subtitulo: 'Equipo Veterinario',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const PersonalMedicoAdmin()),
+              );
+            },
           ),
-
         ],
-      )
+      ),
     ],
   );
 }
@@ -225,39 +239,39 @@ Widget _cardMenuPrincipal({
   required IconData icono,
   required String titulo,
   required String subtitulo,
+  required VoidCallback onTap,
 }) {
   return Expanded(
-    child: Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColores.blanco,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.black54, width: 1),
-
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icono, size: 34, color: AppColores.negro, fill: 0,),
-          const SizedBox(height: 10),
-          Text(
-            titulo,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
+    child: GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColores.blanco,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.black54, width: 1),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icono, size: 34, color: AppColores.negro, fill: 0),
+            const SizedBox(height: 10),
+            Text(
+              titulo,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
             ),
-          ),
-          const SizedBox(height: 10,),
-          Text(
-            subtitulo,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColores.textoNegro,
+            const SizedBox(height: 10),
+            Text(
+              subtitulo,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColores.textoNegro,
+              ),
             ),
-          )
-        ],
+          ],
+        ),
       ),
     ),
   );
@@ -283,10 +297,7 @@ class _ItemProximaCita extends StatelessWidget {
   final String titulo;
   final String detalle;
 
-  const _ItemProximaCita({
-    required this.titulo,
-    required this.detalle,
-  });
+  const _ItemProximaCita({required this.titulo, required this.detalle});
 
   @override
   Widget build(BuildContext context) {
@@ -327,10 +338,7 @@ class _ItemProximaCita extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   detalle,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(fontSize: 13, color: Colors.grey),
                 ),
               ],
             ),
@@ -356,22 +364,31 @@ Widget _bottomNavbar(BuildContext context) {
       children: [
         IconButton(
           onPressed: () {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const VistaPacientesAdmin()),
             );
           },
-          icon: const Icon(Icons.pets, color: AppColores.negro, size: 30, fill: 0,),
+          icon: const Icon(
+            Icons.pets,
+            color: AppColores.negro,
+            size: 30,
+            fill: 0,
+          ),
           tooltip: 'Pacientes',
         ),
         IconButton(
           onPressed: () {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const VistaCitaAdmin()),
             );
           },
-          icon: const Icon(Icons.calendar_month_outlined, color: AppColores.negro, size: 30),
+          icon: const Icon(
+            Icons.calendar_month_outlined,
+            color: AppColores.negro,
+            size: 30,
+          ),
           tooltip: 'Citas',
         ),
         IconButton(
@@ -382,32 +399,42 @@ Widget _bottomNavbar(BuildContext context) {
               (route) => false,
             );
           },
-          icon: const Icon(Icons.home_outlined, color: AppColores.negro, size: 35),
+          icon: const Icon(
+            Icons.home_outlined,
+            color: AppColores.negro,
+            size: 35,
+          ),
           tooltip: 'Inicio',
         ),
         IconButton(
           onPressed: () {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const HistorialMedicoAdmin()),
             );
           },
-          icon: const Icon(Icons.assignment_outlined, color: AppColores.negro, size: 30),
+          icon: const Icon(
+            Icons.assignment_outlined,
+            color: AppColores.negro,
+            size: 30,
+          ),
           tooltip: 'Historial médico',
         ),
         IconButton(
           onPressed: () {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const PersonalMedicoAdmin()),
             );
           },
-          icon: const Icon(Icons.medical_services_outlined, color: AppColores.negro, size: 30),
+          icon: const Icon(
+            Icons.medical_services_outlined,
+            color: AppColores.negro,
+            size: 30,
+          ),
           tooltip: 'Personal médico',
         ),
       ],
     ),
   );
 }
-
-
