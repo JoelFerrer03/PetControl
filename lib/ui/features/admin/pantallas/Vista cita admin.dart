@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:petcontrol/hex/infraestructura/mock/citas_mock.dart';
 import 'package:petcontrol/ui/core/tema/app_colores.dart';
+import 'package:petcontrol/ui/core/widgets/popup_detalle.dart';
 import 'package:petcontrol/ui/features/admin/widgets/tarjeta creacion cita.dart';
 
 class VistaCitaAdmin extends StatelessWidget {
@@ -56,32 +58,46 @@ class VistaCitaAdmin extends StatelessWidget {
                   const Text(
                     'Citas programadas para hoy',
                     style: TextStyle(
-                      color: Color(0xFF2E4E47),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                      color: AppColores.textoNegro,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
                       height: 1,
                     ),
                   ),
                   const SizedBox(height: 20),
-                  for (var i = 0; i < _citasHoy.length; i++) ...[
-                    _TarjetaCita(cita: _citasHoy[i]),
-                    if (i < _citasHoy.length - 1) const SizedBox(height: 16),
+                  for (var i = 0; i < citasHoyMock.length; i++) ...[
+                    _TarjetaCita(
+                      cita: citasHoyMock[i],
+                      onTap: () => _abrirDetalleCitaPreview(
+                        context,
+                        citasHoyMock[i],
+                        bloqueAgenda: 'Hoy',
+                      ),
+                    ),
+                    if (i < citasHoyMock.length - 1) const SizedBox(height: 16),
                   ],
                   const SizedBox(height: 22),
                   const Text(
                     'Proximas citas',
                     style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 34,
+                      color: AppColores.textoNegro,
+                      fontSize: 24,
                       fontWeight: FontWeight.w800,
                       height: 1,
                       letterSpacing: 0.2,
                     ),
                   ),
                   const SizedBox(height: 16),
-                  for (var i = 0; i < _citasProximas.length; i++) ...[
-                    _TarjetaCita(cita: _citasProximas[i]),
-                    if (i < _citasProximas.length - 1)
+                  for (var i = 0; i < citasProximasMock.length; i++) ...[
+                    _TarjetaCita(
+                      cita: citasProximasMock[i],
+                      onTap: () => _abrirDetalleCitaPreview(
+                        context,
+                        citasProximasMock[i],
+                        bloqueAgenda: 'Proxima',
+                      ),
+                    ),
+                    if (i < citasProximasMock.length - 1)
                       const SizedBox(height: 16),
                   ],
                 ],
@@ -142,6 +158,31 @@ void _abrirRegistroCita(BuildContext context) {
         ),
       );
     },
+  );
+}
+
+void _abrirDetalleCitaPreview(
+  BuildContext context,
+  CitaVistaMock cita, {
+  required String bloqueAgenda,
+}) {
+  mostrarPopupDetalle(
+    context,
+    ConfigPopupDetalle(
+      titulo: cita.nombreMascota,
+      subtitulo: 'Detalle completo de la cita',
+      icono: cita.icono,
+      colorAcento: cita.estadoTextColor,
+      chips: <String>[cita.estado, bloqueAgenda],
+      campos: <DetalleCampo>[
+        DetalleCampo(etiqueta: 'Mascota', valor: cita.nombreMascota),
+        DetalleCampo(etiqueta: 'Bloque', valor: bloqueAgenda),
+        DetalleCampo(etiqueta: 'Hora', valor: cita.hora),
+        DetalleCampo(etiqueta: 'Estado', valor: cita.estado),
+        DetalleCampo(etiqueta: 'Procedimiento', valor: cita.procedimiento),
+        DetalleCampo(etiqueta: 'Descripcion', valor: cita.descripcion),
+      ],
+    ),
   );
 }
 
@@ -227,94 +268,102 @@ class _EncabezadoCitas extends StatelessWidget {
 }
 
 class _TarjetaCita extends StatelessWidget {
-  const _TarjetaCita({required this.cita});
+  const _TarjetaCita({required this.cita, required this.onTap});
 
-  final _CitaVista cita;
+  final CitaVistaMock cita;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: const BoxConstraints(minHeight: 98),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE8E8E8),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: const Color(0xFF373737), width: 1.1),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              color: cita.cajaHoraColor,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(cita.icono, color: cita.iconoColor, size: 18),
-                const SizedBox(height: 3),
-                Text(
-                  cita.hora,
-                  style: TextStyle(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w800,
-                    color: cita.horaColor,
-                    height: 1,
-                  ),
-                ),
-              ],
-            ),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 98),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+          decoration: BoxDecoration(
+            color: const Color(0xFFE8E8E8),
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(color: const Color(0xFF373737), width: 1.1),
           ),
-          const SizedBox(width: 13),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 4,
-                  crossAxisAlignment: WrapCrossAlignment.center,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: cita.cajaHoraColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    Icon(cita.icono, color: cita.iconoColor, size: 18),
+                    const SizedBox(height: 3),
                     Text(
-                      cita.nombreMascota,
-                      style: const TextStyle(
-                        color: Color(0xFF1D2730),
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
+                      cita.hora,
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w800,
+                        color: cita.horaColor,
                         height: 1,
                       ),
                     ),
-                    _ChipEstado(cita: cita),
                   ],
                 ),
-                const SizedBox(height: 3),
-                Text(
-                  cita.procedimiento,
-                  style: const TextStyle(
-                    color: Color(0xFF5E6970),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    height: 1,
-                  ),
+              ),
+              const SizedBox(width: 13),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Text(
+                          cita.nombreMascota,
+                          style: const TextStyle(
+                            color: Color(0xFF1D2730),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            height: 1,
+                          ),
+                        ),
+                        _ChipEstado(cita: cita),
+                      ],
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      cita.procedimiento,
+                      style: const TextStyle(
+                        color: Color(0xFF5E6970),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        height: 1,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      cita.descripcion,
+                      style: const TextStyle(
+                        color: Color(0xFF5E6970),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        height: 1.05,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 3),
-                Text(
-                  cita.descripcion,
-                  style: const TextStyle(
-                    color: Color(0xFF5E6970),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    height: 1.05,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -323,7 +372,7 @@ class _TarjetaCita extends StatelessWidget {
 class _ChipEstado extends StatelessWidget {
   const _ChipEstado({required this.cita});
 
-  final _CitaVista cita;
+  final CitaVistaMock cita;
 
   @override
   Widget build(BuildContext context) {
@@ -345,115 +394,3 @@ class _ChipEstado extends StatelessWidget {
     );
   }
 }
-
-class _CitaVista {
-  const _CitaVista({
-    required this.nombreMascota,
-    required this.hora,
-    required this.estado,
-    required this.procedimiento,
-    required this.descripcion,
-    required this.icono,
-    required this.iconoColor,
-    required this.horaColor,
-    required this.cajaHoraColor,
-    required this.estadoBgColor,
-    required this.estadoTextColor,
-  });
-
-  final String nombreMascota;
-  final String hora;
-  final String estado;
-  final String procedimiento;
-  final String descripcion;
-  final IconData icono;
-  final Color iconoColor;
-  final Color horaColor;
-  final Color cajaHoraColor;
-  final Color estadoBgColor;
-  final Color estadoTextColor;
-}
-
-const _citasHoy = <_CitaVista>[
-  _CitaVista(
-    nombreMascota: 'Luna',
-    hora: '10:30',
-    estado: 'confirmada',
-    procedimiento: 'Vacunacion',
-    descripcion: 'Dr. Martinez | Maria Garcia',
-    icono: Icons.schedule_rounded,
-    iconoColor: Color(0xFF1D9A74),
-    horaColor: Color(0xFF0E8C68),
-    cajaHoraColor: Color(0xFFD6E2DD),
-    estadoBgColor: Color(0xFFCFE5DD),
-    estadoTextColor: Color(0xFF2D8A6C),
-  ),
-  _CitaVista(
-    nombreMascota: 'Luna',
-    hora: '10:30',
-    estado: 'confirmada',
-    procedimiento: 'Vacunacion',
-    descripcion: 'Dr. Martinez | Maria Garcia',
-    icono: Icons.schedule_rounded,
-    iconoColor: Color(0xFF1D9A74),
-    horaColor: Color(0xFF0E8C68),
-    cajaHoraColor: Color(0xFFD6E2DD),
-    estadoBgColor: Color(0xFFCFE5DD),
-    estadoTextColor: Color(0xFF2D8A6C),
-  ),
-  _CitaVista(
-    nombreMascota: 'Luna',
-    hora: '10:30',
-    estado: 'confirmada',
-    procedimiento: 'Vacunacion',
-    descripcion: 'Dr. Martinez | Maria Garcia',
-    icono: Icons.schedule_rounded,
-    iconoColor: Color(0xFF1D9A74),
-    horaColor: Color(0xFF0E8C68),
-    cajaHoraColor: Color(0xFFD6E2DD),
-    estadoBgColor: Color(0xFFCFE5DD),
-    estadoTextColor: Color(0xFF2D8A6C),
-  ),
-];
-
-const _citasProximas = <_CitaVista>[
-  _CitaVista(
-    nombreMascota: 'Max',
-    hora: '10:00',
-    estado: 'pendiente',
-    procedimiento: 'Cirugia Menor',
-    descripcion: '21 Feb 2026 | Dr. Martinez',
-    icono: Icons.calendar_today_outlined,
-    iconoColor: Color(0xFF63737D),
-    horaColor: Color(0xFF334149),
-    cajaHoraColor: Color(0xFFD5DDE0),
-    estadoBgColor: Color(0xFFE9DBC7),
-    estadoTextColor: Color(0xFF8A6A40),
-  ),
-  _CitaVista(
-    nombreMascota: 'Max',
-    hora: '10:00',
-    estado: 'pendiente',
-    procedimiento: 'Cirugia Menor',
-    descripcion: '21 Feb 2026 | Dr. Martinez',
-    icono: Icons.calendar_today_outlined,
-    iconoColor: Color(0xFF63737D),
-    horaColor: Color(0xFF334149),
-    cajaHoraColor: Color(0xFFD5DDE0),
-    estadoBgColor: Color(0xFFE9DBC7),
-    estadoTextColor: Color(0xFF8A6A40),
-  ),
-  _CitaVista(
-    nombreMascota: 'Max',
-    hora: '10:00',
-    estado: 'pendiente',
-    procedimiento: 'Cirugia Menor',
-    descripcion: '21 Feb 2026 | Dr. Martinez',
-    icono: Icons.calendar_today_outlined,
-    iconoColor: Color(0xFF63737D),
-    horaColor: Color(0xFF334149),
-    cajaHoraColor: Color(0xFFD5DDE0),
-    estadoBgColor: Color(0xFFE9DBC7),
-    estadoTextColor: Color(0xFF8A6A40),
-  ),
-];

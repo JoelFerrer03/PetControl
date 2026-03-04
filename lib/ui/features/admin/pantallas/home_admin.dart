@@ -1,65 +1,83 @@
 import 'package:flutter/material.dart';
+import 'package:petcontrol/hex/infraestructura/mock/citas_mock.dart';
 import 'package:petcontrol/ui/core/tema/app_colores.dart';
-import 'package:petcontrol/ui/features/admin/pantallas/Historial medico admin.dart';
+import 'package:petcontrol/ui/core/widgets/popup_detalle.dart';
+import 'package:petcontrol/ui/features/admin/pantallas/Historial%20de%20citas.dart';
 import 'package:petcontrol/ui/features/admin/pantallas/Personal medico.dart';
 import 'package:petcontrol/ui/features/admin/pantallas/Vista cita admin.dart';
 import 'package:petcontrol/ui/features/admin/pantallas/Vista pacientes admin.dart';
-import 'package:petcontrol/ui/features/autenticacion/pantallas/bienvenida_pantalla.dart';
 
 class HomeAdmin extends StatelessWidget {
   const HomeAdmin({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final alturaCurva = (size.height * 0.74).clamp(560.0, 860.0);
+
     return Scaffold(
-      backgroundColor: AppColores.blanco,
-      //bottomNavigationBar: _bottomNavbar(context),
+      backgroundColor: const Color(0xFFECECEC),
       body: SafeArea(
         child: Stack(
           children: [
-            SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 3),
-                    _header(context),
-                    const SizedBox(height: 16),
-
-                    _filaEstadisticas(),
-
-                    const SizedBox(height: 24),
-
-                    const Text(
-                      "Menu Principal",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-
-                    _menuPrincipalGrid(context),
-
-                    const SizedBox(height: 24),
-
-                    const Text(
-                      "Próxima Cita",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-
-                    const SizedBox(height: 10),
-                    _tarjetaProximaCita(),
-                    const SizedBox(height: 24),
-                  ],
+            const Positioned.fill(child: ColoredBox(color: Color(0xFFECECEC))),
+            const Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.center,
+                    colors: [AppColores.verdeOscuro, AppColores.verde],
+                  ),
                 ),
               ),
             ),
-            //const BotonAtras(),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: ClipPath(
+                clipper: _CurvaHomeAdminClipper(),
+                child: Container(
+                  color: const Color(0xFFECECEC),
+                  height: alturaCurva,
+                  width: double.infinity,
+                ),
+              ),
+            ),
+            SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 92),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _header(context),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Controla agenda, pacientes y equipo medico desde el panel principal.',
+                    style: TextStyle(
+                      color: Color(0xFFDDF6E5),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _filaEstadisticas(),
+                  const SizedBox(height: 16),
+                  _PanelSeccion(
+                    titulo: 'Menu Principal',
+                    icono: Icons.dashboard_customize_outlined,
+                    child: _menuPrincipalGrid(context),
+                  ),
+                  const SizedBox(height: 14),
+                  _PanelSeccion(
+                    titulo: 'Proxima Cita',
+                    icono: Icons.event_note_outlined,
+                    child: _tarjetaProximaCita(context),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -68,71 +86,111 @@ class HomeAdmin extends StatelessWidget {
   }
 }
 
+class _CurvaHomeAdminClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.moveTo(0, size.height * 0.2);
+    path.quadraticBezierTo(
+      size.width * 0.17,
+      size.height * 0.36,
+      size.width * 0.46,
+      size.height * 0.43,
+    );
+    path.quadraticBezierTo(
+      size.width * 0.8,
+      size.height * 0.52,
+      size.width,
+      size.height * 0.39,
+    );
+    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}
+
 Widget _header(BuildContext context) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       Row(
-        children: const [
+        children: [
           CircleAvatar(
             radius: 22,
-            backgroundColor: AppColores.fondoVerde,
+            backgroundColor: const Color(0x22FFFFFF),
             child: Text(
-              'N',
-              style: TextStyle(
+              inicialDoctorHomeAdminMock,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
               ),
             ),
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Bienvenido',
-                style: TextStyle(fontSize: 14, color: Colors.black87),
+                style: TextStyle(fontSize: 14, color: Color(0xFFDDF6E5)),
               ),
               Text(
-                'Dr. Naymar Guerra',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                nombreDoctorHomeAdminMock,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 21,
+                  fontWeight: FontWeight.w800,
+                  height: 1.05,
+                ),
               ),
             ],
           ),
         ],
       ),
-      IconButton(
-        onPressed: () {
-          Navigator.of(context).popUntil((route) => route.isFirst);
-        },
-        icon: const Icon(Icons.logout),
-        tooltip: 'Salir',
+      Container(
+        decoration: BoxDecoration(
+          color: const Color(0x22FFFFFF),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0x55FFFFFF)),
+        ),
+        child: IconButton(
+          onPressed: () {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          },
+          icon: const Icon(Icons.logout, color: Colors.white),
+          tooltip: 'Salir',
+        ),
       ),
     ],
   );
 }
 
 Widget _filaEstadisticas() {
+  final metricas = metricasHomeAdminMock;
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       _tarjetaMetrica(
-        icono: Icons.pets_outlined,
-        numero: '24',
-        etiqueta: 'Pacientes',
+        icono: metricas[0].icono,
+        numero: metricas[0].numero,
+        etiqueta: metricas[0].etiqueta,
       ),
       const SizedBox(width: 12),
       _tarjetaMetrica(
-        icono: Icons.event_note_outlined,
-        numero: '8',
-        etiqueta: 'Citas',
+        icono: metricas[1].icono,
+        numero: metricas[1].numero,
+        etiqueta: metricas[1].etiqueta,
       ),
       const SizedBox(width: 12),
       _tarjetaMetrica(
-        icono: Icons.group_outlined,
-        numero: '5',
-        etiqueta: 'Personal',
+        icono: metricas[2].icono,
+        numero: metricas[2].numero,
+        etiqueta: metricas[2].etiqueta,
       ),
     ],
   );
@@ -147,23 +205,51 @@ Widget _tarjetaMetrica({
     child: Container(
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
       decoration: BoxDecoration(
-        color: AppColores.blanco,
+        gradient: const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFFF7FFF9), Color(0xFFE5F4E9)],
+        ),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColores.negro, width: 1),
+        border: Border.all(color: const Color(0xFF5B7B66), width: 1.05),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x220E2A17),
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icono, size: 22, color: AppColores.negro),
+          Container(
+            width: 24,
+            height: 3,
+            decoration: BoxDecoration(
+              color: const Color(0xFF3F7A52),
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+          const SizedBox(height: 7),
+          Icon(icono, size: 22, color: const Color(0xFF245A37)),
           const SizedBox(height: 6),
           Text(
             numero,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF20302A),
+            ),
           ),
           const SizedBox(height: 4),
           Text(
             etiqueta,
-            style: const TextStyle(fontSize: 14, color: Colors.black54),
+            style: const TextStyle(
+              fontSize: 14,
+              color: Color(0xFF5A6A62),
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),
@@ -207,8 +293,8 @@ Widget _menuPrincipalGrid(BuildContext context) {
         children: [
           _cardMenuPrincipal(
             icono: Icons.assignment_outlined,
-            titulo: 'Historial Medico',
-            subtitulo: 'Registros clinicos',
+            titulo: 'Historial de citas',
+            subtitulo: 'Citas pasadas',
             onTap: () {
               Navigator.push(
                 context,
@@ -242,53 +328,183 @@ Widget _cardMenuPrincipal({
   required VoidCallback onTap,
 }) {
   return Expanded(
-    child: GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColores.blanco,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.black54, width: 1),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icono, size: 34, color: AppColores.negro, fill: 0),
-            const SizedBox(height: 10),
-            Text(
-              titulo,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+    child: Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Ink(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFFF8FCF9), Color(0xFFE8F3EB)],
             ),
-            const SizedBox(height: 10),
-            Text(
-              subtitulo,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColores.textoNegro,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFF6A8674), width: 1),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x220E2A17),
+                blurRadius: 8,
+                offset: Offset(0, 4),
               ),
-            ),
-          ],
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFD8E9DD),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icono, size: 24, color: const Color(0xFF295B3B)),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                titulo,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF21342A),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                subtitulo,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Color(0xFF5A6B61),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     ),
   );
 }
 
-Widget _tarjetaProximaCita() {
+class _PanelSeccion extends StatelessWidget {
+  const _PanelSeccion({
+    required this.titulo,
+    required this.icono,
+    required this.child,
+  });
+
+  final String titulo;
+  final IconData icono;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF2F8F3),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFF8AA391), width: 1),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x220E2A17),
+            blurRadius: 10,
+            offset: Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFDCEADF),
+                  borderRadius: BorderRadius.circular(9),
+                ),
+                child: Icon(icono, color: const Color(0xFF27563A), size: 18),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  titulo,
+                  style: const TextStyle(
+                    color: Color(0xFF1F3328),
+                    fontSize: 19,
+                    fontWeight: FontWeight.w800,
+                    height: 1,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+void _abrirDetalleProximaCitaHomeAdmin(
+  BuildContext context,
+  ProximaCitaHomeAdminMock cita,
+) {
+  final partesTitulo = cita.titulo.split(' - ');
+  final nombreMascota = partesTitulo.isNotEmpty
+      ? partesTitulo.first
+      : cita.titulo;
+  final motivo = partesTitulo.length > 1
+      ? partesTitulo.sublist(1).join(' - ')
+      : 'Sin especificar';
+
+  final partesDetalle = cita.detalle.split(' - ');
+  final agenda = partesDetalle.isNotEmpty ? partesDetalle.first : cita.detalle;
+  final profesional = partesDetalle.length > 1
+      ? partesDetalle.sublist(1).join(' - ')
+      : 'Sin asignar';
+
+  mostrarPopupDetalle(
+    context,
+    ConfigPopupDetalle(
+      titulo: nombreMascota,
+      subtitulo: 'Detalle de próxima cita',
+      icono: Icons.event_note_outlined,
+      colorAcento: AppColores.verdepacientes,
+      chips: const <String>['Proxima', 'Home Admin'],
+      campos: <DetalleCampo>[
+        DetalleCampo(etiqueta: 'Mascota', valor: nombreMascota),
+        DetalleCampo(etiqueta: 'Motivo', valor: motivo),
+        DetalleCampo(etiqueta: 'Fecha y hora', valor: agenda),
+        DetalleCampo(etiqueta: 'Profesional', valor: profesional),
+        const DetalleCampo(etiqueta: 'Estado', valor: 'Programada'),
+      ],
+    ),
+  );
+}
+
+Widget _tarjetaProximaCita(BuildContext context) {
   return Column(
-    children: const [
-      _ItemProximaCita(
-        titulo: 'Freya - Vacunación',
-        detalle: 'Hoy 10:30 AM - Dr. GUERRA',
-      ),
-      SizedBox(height: 10),
-      _ItemProximaCita(
-        titulo: 'Luna - Control General',
-        detalle: 'Hoy 2:15 PM - Dr. GUERRA',
-      ),
+    children: [
+      for (var i = 0; i < proximasCitasHomeAdminMock.length; i++) ...[
+        _ItemProximaCita(
+          titulo: proximasCitasHomeAdminMock[i].titulo,
+          detalle: proximasCitasHomeAdminMock[i].detalle,
+          onTap: () => _abrirDetalleProximaCitaHomeAdmin(
+            context,
+            proximasCitasHomeAdminMock[i],
+          ),
+        ),
+        if (i < proximasCitasHomeAdminMock.length - 1)
+          const SizedBox(height: 10),
+      ],
     ],
   );
 }
@@ -296,54 +512,75 @@ Widget _tarjetaProximaCita() {
 class _ItemProximaCita extends StatelessWidget {
   final String titulo;
   final String detalle;
+  final VoidCallback onTap;
 
-  const _ItemProximaCita({required this.titulo, required this.detalle});
+  const _ItemProximaCita({
+    required this.titulo,
+    required this.detalle,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.black54, width: 1),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: Colors.green,
-              borderRadius: BorderRadius.circular(10),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFFF8FCF9), Color(0xFFE9F3EC)],
             ),
-            child: const Icon(
-              Icons.favorite_border,
-              color: Colors.white,
-              size: 22,
-            ),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFF66806F), width: 1),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  titulo,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                  ),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: AppColores.verde,
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  detalle,
-                  style: const TextStyle(fontSize: 13, color: Colors.grey),
+                child: const Icon(
+                  Icons.favorite_border,
+                  color: Colors.white,
+                  size: 22,
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      titulo,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF22352B),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      detalle,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Color(0xFF607067),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -391,21 +628,7 @@ Widget _bottomNavbar(BuildContext context) {
           ),
           tooltip: 'Citas',
         ),
-        IconButton(
-          onPressed: () {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (_) => const BienvenidaPantalla()),
-              (route) => false,
-            );
-          },
-          icon: const Icon(
-            Icons.home_outlined,
-            color: AppColores.negro,
-            size: 35,
-          ),
-          tooltip: 'Inicio',
-        ),
+
         IconButton(
           onPressed: () {
             Navigator.push(
@@ -418,7 +641,7 @@ Widget _bottomNavbar(BuildContext context) {
             color: AppColores.negro,
             size: 30,
           ),
-          tooltip: 'Historial médico',
+          tooltip: 'Historial de citas',
         ),
         IconButton(
           onPressed: () {

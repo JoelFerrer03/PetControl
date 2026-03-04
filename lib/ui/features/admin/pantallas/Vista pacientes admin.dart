@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petcontrol/ui/core/tema/app_colores.dart';
+import 'package:petcontrol/ui/core/widgets/popup_detalle.dart';
 import 'package:petcontrol/ui/features/admin/widgets/tarjeta creacion paciente.dart';
 
 class VistaPacientesAdmin extends StatelessWidget {
@@ -55,7 +56,11 @@ class VistaPacientesAdmin extends StatelessWidget {
                   const _BuscadorPacientes(),
                   const SizedBox(height: 20),
                   for (var i = 0; i < _pacientes.length; i++) ...[
-                    _TarjetaPaciente(paciente: _pacientes[i]),
+                    _TarjetaPaciente(
+                      paciente: _pacientes[i],
+                      onTap: () =>
+                          _abrirDetallePacientePreview(context, _pacientes[i]),
+                    ),
                     if (i < _pacientes.length - 1) const SizedBox(height: 30),
                   ],
                 ],
@@ -143,6 +148,30 @@ void _abrirRegistroPaciente(BuildContext context) {
         ),
       );
     },
+  );
+}
+
+void _abrirDetallePacientePreview(
+  BuildContext context,
+  _PacienteVista paciente,
+) {
+  mostrarPopupDetalle(
+    context,
+    ConfigPopupDetalle(
+      titulo: paciente.nombre,
+      subtitulo: 'Ficha completa del paciente',
+      icono: Icons.pets_outlined,
+      colorAcento: const Color(0xFF2D7C62),
+      chips: <String>[paciente.especie],
+      campos: <DetalleCampo>[
+        DetalleCampo(etiqueta: 'Nombre', valor: paciente.nombre),
+        DetalleCampo(etiqueta: 'Especie', valor: paciente.especie),
+        DetalleCampo(etiqueta: 'Raza', valor: paciente.raza),
+        DetalleCampo(etiqueta: 'Edad', valor: '${paciente.edad} años'),
+        DetalleCampo(etiqueta: 'Peso', valor: '${paciente.peso} kg'),
+        DetalleCampo(etiqueta: 'Dueño', valor: paciente.dueno),
+      ],
+    ),
   );
 }
 
@@ -234,98 +263,106 @@ class _BuscadorPacientes extends StatelessWidget {
 }
 
 class _TarjetaPaciente extends StatelessWidget {
-  const _TarjetaPaciente({required this.paciente});
+  const _TarjetaPaciente({required this.paciente, required this.onTap});
 
   final _PacienteVista paciente;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: const BoxConstraints(minHeight: 96),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE3E3E3),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(19),
-        border: Border.all(color: const Color(0xFF4B4B4B), width: 1),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: const BoxDecoration(
-              color: Color(0xFFD2E2DB),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.pets_outlined,
-              color: Color(0xFF14916A),
-              size: 19,
-            ),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 96),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          decoration: BoxDecoration(
+            color: const Color(0xFFE3E3E3),
+            borderRadius: BorderRadius.circular(19),
+            border: Border.all(color: const Color(0xFF4B4B4B), width: 1),
           ),
-          const SizedBox(width: 11),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFD2E2DB),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.pets_outlined,
+                  color: Color(0xFF14916A),
+                  size: 19,
+                ),
+              ),
+              const SizedBox(width: 11),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
+                    Row(
+                      children: [
+                        Text(
+                          paciente.nombre,
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF222222),
+                            height: 1,
+                          ),
+                        ),
+                        const SizedBox(width: 7),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 7,
+                            vertical: 1.8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFBFE4D9),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            paciente.especie,
+                            style: const TextStyle(
+                              fontSize: 9.5,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF2D7C62),
+                              height: 1,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
                     Text(
-                      paciente.nombre,
+                      paciente.raza,
                       style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF222222),
+                        color: Color(0xFF646E74),
+                        fontSize: 12.8,
                         height: 1,
                       ),
                     ),
-                    const SizedBox(width: 7),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 7,
-                        vertical: 1.8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFBFE4D9),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        paciente.especie,
-                        style: const TextStyle(
-                          fontSize: 9.5,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF2D7C62),
-                          height: 1,
-                        ),
+                    const SizedBox(height: 3),
+                    Text(
+                      '${paciente.edad} años | ${paciente.peso} kg | ${paciente.dueno}',
+                      style: const TextStyle(
+                        color: Color(0xFF646E74),
+                        fontSize: 12.8,
+                        height: 1,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  paciente.raza,
-                  style: const TextStyle(
-                    color: Color(0xFF646E74),
-                    fontSize: 12.8,
-                    height: 1,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  '${paciente.edad} años | ${paciente.peso} kg | ${paciente.dueno}',
-                  style: const TextStyle(
-                    color: Color(0xFF646E74),
-                    fontSize: 12.8,
-                    height: 1,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

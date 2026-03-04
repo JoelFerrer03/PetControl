@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:petcontrol/hex/infraestructura/mock/usuarios_mock.dart';
 import 'package:petcontrol/ui/core/tema/app_colores.dart';
 import 'package:petcontrol/ui/features/admin/pantallas/home_admin.dart';
 import 'package:petcontrol/ui/features/autenticacion/pantallas/registro_pantalla.dart';
@@ -12,12 +13,6 @@ class FormularioLogin extends StatefulWidget {
 }
 
 class _FormularioLoginState extends State<FormularioLogin> {
-  static const _correoAdmin = 'admin@admin.com';
-  static const _contrasenaAdmin = 'admin';
-
-  static const _correoUser = 'user@user.com';
-  static const _contrasenaUser = 'user';
-
   final _correoCtrl = TextEditingController();
   final _contrasenaCtrl = TextEditingController();
 
@@ -52,7 +47,7 @@ class _FormularioLoginState extends State<FormularioLogin> {
     setState(() => _isLoading = true);
 
     // TODO: reemplazar por tu login real (repo/api)
-    await Future.delayed(const Duration(milliseconds: 900));
+    await Future.delayed(duracionSimulacionAuthMock);
 
     final correoIngresado = _correoCtrl.text.trim().toLowerCase();
     final contrasenaIngresada = _contrasenaCtrl.text;
@@ -60,8 +55,8 @@ class _FormularioLoginState extends State<FormularioLogin> {
     if (!mounted) return;
     setState(() => _isLoading = false);
 
-    if (correoIngresado == _correoAdmin &&
-        contrasenaIngresada == _contrasenaAdmin) {
+    if (correoIngresado == correoAdminMock &&
+        contrasenaIngresada == contrasenaAdminMock) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const HomeAdmin()),
@@ -69,8 +64,8 @@ class _FormularioLoginState extends State<FormularioLogin> {
       return;
     }
 
-    if (correoIngresado == _correoUser &&
-        contrasenaIngresada == _contrasenaUser) {
+    if (correoIngresado == correoUserMock &&
+        contrasenaIngresada == contrasenaUserMock) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const HomeCliente()),
@@ -79,7 +74,7 @@ class _FormularioLoginState extends State<FormularioLogin> {
     }
 
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text('Credenciales incorrectas'),
+      content: Text(mensajeCredencialesInvalidasMock),
       backgroundColor: Colors.red,
     ));
   }
@@ -87,7 +82,7 @@ class _FormularioLoginState extends State<FormularioLogin> {
   String? _validarCorreo(String value) {
     final correo = value.trim();
     if (correo.isEmpty) return 'Ingresa tu correo';
-    if (correo.toLowerCase() == _correoUser) return null;
+    if (correo.toLowerCase() == correoUserMock) return null;
     final regex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
     if (!regex.hasMatch(correo)) return 'Correo no válido';
     return null;
@@ -95,7 +90,7 @@ class _FormularioLoginState extends State<FormularioLogin> {
 
   String? _validarContrasena(String value) {
     if (value.isEmpty) return 'Ingresa tu contraseña';
-    if (value == _contrasenaAdmin || value == _contrasenaUser) return null;
+    if (value == contrasenaAdminMock || value == contrasenaUserMock) return null;
     if (value.length < 6) {
       return 'Mínimo 6 caracteres';
     }

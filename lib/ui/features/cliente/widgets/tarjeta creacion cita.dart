@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:petcontrol/hex/infraestructura/mock/citas_mock.dart';
+import 'package:petcontrol/hex/infraestructura/mock/cliente_home_mock.dart';
 import 'package:petcontrol/hex/infraestructura/mock/mascotas_mock.dart';
-import 'package:petcontrol/hex/infraestructura/mock/usuarios_mock.dart';
+
+const _idUsuarioFijoCliente = 'u_joel_ferrer';
+const _estadoCitaFijoCliente = 'proxima';
 
 String _formatearFechaHora(DateTime fechaHora) {
   const meses = <String>[
@@ -66,43 +69,19 @@ class _TarjetaCreacionCitaState extends State<TarjetaCreacionCita> {
   final _descripcionController = TextEditingController();
 
   String? _mascotaSeleccionadaId;
-  String? _usuarioSeleccionadoId;
   String? _motivoSeleccionado;
-  String? _estadoSeleccionado;
   DateTime? _fechaHoraSeleccionada;
 
-  List<MascotaRegistradaMock> get _mascotasDisponibles {
-    final usuarioId = _usuarioSeleccionadoId;
-    if (usuarioId == null) {
-      return mascotasRegistradasMock;
-    }
-    return mascotasRegistradasMock
-        .where((mascota) => mascota.usuarioId == usuarioId)
-        .toList();
-  }
+  List<MascotaRegistradaMock> get _mascotasDisponibles =>
+      mascotasClienteJoelMock;
 
   MascotaRegistradaMock? _mascotaPorId(String id) {
-    for (final mascota in mascotasRegistradasMock) {
+    for (final mascota in mascotasClienteJoelMock) {
       if (mascota.id == id) {
         return mascota;
       }
     }
     return null;
-  }
-
-  UsuarioRegistradoMock? _usuarioPorId(String id) {
-    for (final usuario in usuariosRegistradosMock) {
-      if (usuario.id == id) {
-        return usuario;
-      }
-    }
-    return null;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _estadoSeleccionado = estadosCitaMock.first;
   }
 
   @override
@@ -206,33 +185,9 @@ class _TarjetaCreacionCitaState extends State<TarjetaCreacionCita> {
     });
   }
 
-  void _onUsuarioChanged(String? usuarioId) {
-    setState(() {
-      _usuarioSeleccionadoId = usuarioId;
-      if (_mascotaSeleccionadaId == null) {
-        return;
-      }
-
-      final mascotaSigueDisponible = _mascotasDisponibles.any(
-        (mascota) => mascota.id == _mascotaSeleccionadaId,
-      );
-      if (!mascotaSigueDisponible) {
-        _mascotaSeleccionadaId = null;
-      }
-    });
-  }
-
   void _onMascotaChanged(String? mascotaId) {
     setState(() {
       _mascotaSeleccionadaId = mascotaId;
-      if (mascotaId == null) {
-        return;
-      }
-
-      final mascota = _mascotaPorId(mascotaId);
-      if (mascota != null) {
-        _usuarioSeleccionadoId = mascota.usuarioId;
-      }
     });
   }
 
@@ -244,23 +199,16 @@ class _TarjetaCreacionCitaState extends State<TarjetaCreacionCita> {
     }
 
     final mascotaId = _mascotaSeleccionadaId;
-    final usuarioId = _usuarioSeleccionadoId;
     final motivo = _motivoSeleccionado;
-    final estado = _estadoSeleccionado;
     final fechaHora = _fechaHoraSeleccionada;
 
-    if (mascotaId == null ||
-        usuarioId == null ||
-        motivo == null ||
-        estado == null ||
-        fechaHora == null) {
+    if (mascotaId == null || motivo == null || fechaHora == null) {
       setState(() {});
       return;
     }
 
     final mascota = _mascotaPorId(mascotaId);
-    final usuario = _usuarioPorId(usuarioId);
-    if (mascota == null || usuario == null) {
+    if (mascota == null) {
       return;
     }
 
@@ -268,11 +216,11 @@ class _TarjetaCreacionCitaState extends State<TarjetaCreacionCita> {
       CitaCreacionData(
         idMascota: mascota.id,
         nombreMascota: mascota.nombre,
-        idUsuario: usuario.id,
-        nombreUsuario: usuario.nombre,
+        idUsuario: _idUsuarioFijoCliente,
+        nombreUsuario: nombreClienteHomeMock,
         fechaHora: fechaHora,
         motivo: motivo,
-        estado: estado,
+        estado: _estadoCitaFijoCliente,
         descripcion: _descripcionController.text.trim(),
       ),
     );
@@ -347,37 +295,24 @@ class _TarjetaCreacionCitaState extends State<TarjetaCreacionCita> {
                     : _onMascotaChanged,
               ),
               const SizedBox(height: 4),
-              /* const Padding(
+              const Padding(
                 padding: EdgeInsets.only(left: 2),
                 child: Text(
-                  'Si eliges un usuario, la lista de mascotas se filtra automaticamente.',
+                  'Se muestran las mascotas asociadas a tu cuenta.',
                   style: TextStyle(
                     color: Color(0xFF6A7674),
-                    fontSize: 12,
+                    fontSize: 11.5,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-              ), */
+              ),
               const SizedBox(height: 10),
               const _EtiquetaCampo('Usuario registrado'),
-              DropdownButtonFormField<String>(
-                initialValue: _usuarioSeleccionadoId,
-                validator: (value) => value == null ? '' : null,
-                isExpanded: true,
-                menuMaxHeight: 260,
-                decoration: _decoracionCampo('Seleccionar usuario'),
-                items: usuariosRegistradosMock
-                    .map(
-                      (usuario) => DropdownMenuItem<String>(
-                        value: usuario.id,
-                        child: Text(
-                          usuario.nombre,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    )
-                    .toList(),
-                onChanged: _onUsuarioChanged,
+              TextFormField(
+                initialValue: nombreClienteHomeMock,
+                readOnly: true,
+                enabled: false,
+                decoration: _decoracionCampo(''),
               ),
               const SizedBox(height: 10),
               const _EtiquetaCampo('Fecha y hora de la proxima cita'),
@@ -421,25 +356,11 @@ class _TarjetaCreacionCitaState extends State<TarjetaCreacionCita> {
               ),
               const SizedBox(height: 10),
               const _EtiquetaCampo('Estado de la cita'),
-              DropdownButtonFormField<String>(
-                initialValue: _estadoSeleccionado,
-                validator: (value) => value == null ? '' : null,
-                isExpanded: true,
-                menuMaxHeight: 220,
-                decoration: _decoracionCampo('Seleccionar estado'),
-                items: estadosCitaMock
-                    .map(
-                      (estado) => DropdownMenuItem<String>(
-                        value: estado,
-                        child: Text(estado, overflow: TextOverflow.ellipsis),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _estadoSeleccionado = value;
-                  });
-                },
+              TextFormField(
+                initialValue: _estadoCitaFijoCliente,
+                readOnly: true,
+                enabled: false,
+                decoration: _decoracionCampo(''),
               ),
               const SizedBox(height: 10),
               const _EtiquetaCampo('Descripcion de la cita'),
@@ -450,7 +371,7 @@ class _TarjetaCreacionCitaState extends State<TarjetaCreacionCita> {
                 minLines: 4,
                 textInputAction: TextInputAction.newline,
                 decoration: _decoracionCampo(
-                  'Describe con detalle lo que se evaluara o realizara (Opcional).',
+                  'Describe con detalle lo que se evaluara o realizara.',
                 ).copyWith(alignLabelWithHint: true),
               ),
               const SizedBox(height: 12),

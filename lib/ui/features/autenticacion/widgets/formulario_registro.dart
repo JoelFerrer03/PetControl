@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:petcontrol/hex/infraestructura/mock/usuarios_mock.dart';
 import 'package:petcontrol/ui/core/tema/app_colores.dart';
 
 class FormularioRegistro extends StatefulWidget {
@@ -65,12 +66,12 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
     if (hayErrores) return;
 
     setState(() => _isLoading = true);
-    await Future.delayed(const Duration(milliseconds: 900));
+    await Future.delayed(duracionSimulacionAuthMock);
     if (!mounted) return;
     setState(() => _isLoading = false);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Registro mock correcto')),
+      const SnackBar(content: Text(mensajeRegistroExitosoMock)),
     );
   }
 
