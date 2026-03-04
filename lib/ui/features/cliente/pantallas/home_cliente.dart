@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:petcontrol/hex/infraestructura/mock/cliente_home_mock.dart';
+import 'package:petcontrol/ui/core/rutas/rutas.dart';
 import 'package:petcontrol/ui/core/tema/app_colores.dart';
 import 'package:petcontrol/ui/core/widgets/popup_detalle.dart';
-import 'package:petcontrol/ui/features/cliente/pantallas/mis_citas_cliente.dart';
-import 'package:petcontrol/ui/features/cliente/pantallas/mis_mascotas_cliente.dart';
 import 'package:petcontrol/ui/features/cliente/widgets/tarjetas_cliente.dart';
 import 'package:petcontrol/ui/features/cliente/widgets/tarjeta creacion cita.dart';
 import 'package:petcontrol/ui/features/cliente/widgets/tarjeta creacion paciente.dart';
@@ -70,17 +69,11 @@ class _HomeClienteState extends State<HomeCliente> {
 
   void _irAResumen(ResumenClienteMock resumen) {
     if (resumen.id == 'mis_mascotas') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const MisMascotasCliente()),
-      );
+      Navigator.pushNamed(context, Rutas.clienteMisMascotasPage);
       return;
     }
     if (resumen.id == 'mis_citas') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const MisCitasCliente()),
-      );
+      Navigator.pushNamed(context, Rutas.clienteMisCitasPage);
     }
   }
 

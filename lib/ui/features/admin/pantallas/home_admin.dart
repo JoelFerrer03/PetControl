@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:petcontrol/hex/infraestructura/mock/citas_mock.dart';
+import 'package:petcontrol/ui/core/rutas/rutas.dart';
 import 'package:petcontrol/ui/core/tema/app_colores.dart';
 import 'package:petcontrol/ui/core/widgets/popup_detalle.dart';
-import 'package:petcontrol/ui/features/admin/pantallas/Historial%20de%20citas.dart';
-import 'package:petcontrol/ui/features/admin/pantallas/Personal medico.dart';
-import 'package:petcontrol/ui/features/admin/pantallas/Vista cita admin.dart';
-import 'package:petcontrol/ui/features/admin/pantallas/Vista pacientes admin.dart';
 
 class HomeAdmin extends StatelessWidget {
   const HomeAdmin({super.key});
@@ -267,10 +264,7 @@ Widget _menuPrincipalGrid(BuildContext context) {
             titulo: 'Pacientes',
             subtitulo: 'Gestionar mascotas',
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const VistaPacientesAdmin()),
-              );
+              Navigator.pushNamed(context, Rutas.adminPacientesPage);
             },
           ),
           const SizedBox(width: 15),
@@ -280,10 +274,7 @@ Widget _menuPrincipalGrid(BuildContext context) {
             titulo: 'Citas',
             subtitulo: 'Agendar y consultar',
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const VistaCitaAdmin()),
-              );
+              Navigator.pushNamed(context, Rutas.adminCitasPage);
             },
           ),
         ],
@@ -296,10 +287,7 @@ Widget _menuPrincipalGrid(BuildContext context) {
             titulo: 'Historial de citas',
             subtitulo: 'Citas pasadas',
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const HistorialMedicoAdmin()),
-              );
+              Navigator.pushNamed(context, Rutas.adminHistorialCitasPage);
             },
           ),
 
@@ -309,10 +297,7 @@ Widget _menuPrincipalGrid(BuildContext context) {
             titulo: 'Personal medico',
             subtitulo: 'Equipo Veterinario',
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const PersonalMedicoAdmin()),
-              );
+              Navigator.pushNamed(context, Rutas.adminPersonalMedicoPage);
             },
           ),
         ],
@@ -601,10 +586,7 @@ Widget _bottomNavbar(BuildContext context) {
       children: [
         IconButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const VistaPacientesAdmin()),
-            );
+            Navigator.pushNamed(context, Rutas.adminPacientesPage);
           },
           icon: const Icon(
             Icons.pets,
@@ -616,10 +598,7 @@ Widget _bottomNavbar(BuildContext context) {
         ),
         IconButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const VistaCitaAdmin()),
-            );
+            Navigator.pushNamed(context, Rutas.adminCitasPage);
           },
           icon: const Icon(
             Icons.calendar_month_outlined,
@@ -631,10 +610,7 @@ Widget _bottomNavbar(BuildContext context) {
 
         IconButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const HistorialMedicoAdmin()),
-            );
+            Navigator.pushNamed(context, Rutas.adminHistorialCitasPage);
           },
           icon: const Icon(
             Icons.assignment_outlined,
@@ -645,10 +621,7 @@ Widget _bottomNavbar(BuildContext context) {
         ),
         IconButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const PersonalMedicoAdmin()),
-            );
+            Navigator.pushNamed(context, Rutas.adminPersonalMedicoPage);
           },
           icon: const Icon(
             Icons.medical_services_outlined,

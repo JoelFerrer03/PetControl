@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:petcontrol/ui/core/rutas/rutas.dart';
 import 'package:petcontrol/ui/core/tema/app_colores.dart';
-import 'package:petcontrol/ui/features/autenticacion/pantallas/login_pantalla.dart';
-import 'package:petcontrol/ui/features/autenticacion/pantallas/registro_pantalla.dart';
 
 class BienvenidaPantalla extends StatelessWidget {
   const BienvenidaPantalla({super.key});
@@ -71,12 +70,7 @@ class BienvenidaPantalla extends StatelessWidget {
                     height: 52,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LoginPantalla(),
-                          ),
-                        );
+                        Navigator.pushNamed(context, Rutas.loginPage);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColores.botonGris,
@@ -107,12 +101,7 @@ class BienvenidaPantalla extends StatelessWidget {
 
                   TextButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const RegistroPantalla(),
-                        ),
-                      );
+                      Navigator.pushNamed(context, Rutas.registerPage);
                     },
                     child: const Text(
                       'Registrate',

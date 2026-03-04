@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:petcontrol/hex/infraestructura/mock/usuarios_mock.dart';
+import 'package:petcontrol/ui/core/rutas/rutas.dart';
 import 'package:petcontrol/ui/core/tema/app_colores.dart';
-import 'package:petcontrol/ui/features/admin/pantallas/home_admin.dart';
-import 'package:petcontrol/ui/features/autenticacion/pantallas/registro_pantalla.dart';
-import 'package:petcontrol/ui/features/cliente/pantallas/home_cliente.dart';
 
 class FormularioLogin extends StatefulWidget {
   const FormularioLogin({super.key});
@@ -57,26 +55,22 @@ class _FormularioLoginState extends State<FormularioLogin> {
 
     if (correoIngresado == correoAdminMock &&
         contrasenaIngresada == contrasenaAdminMock) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const HomeAdmin()),
-      );
+      Navigator.pushNamed(context, Rutas.homeAdminPage);
       return;
     }
 
     if (correoIngresado == correoUserMock &&
         contrasenaIngresada == contrasenaUserMock) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const HomeCliente()),
-      );
+      Navigator.pushNamed(context, Rutas.homeClientePage);
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text(mensajeCredencialesInvalidasMock),
-      backgroundColor: Colors.red,
-    ));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(mensajeCredencialesInvalidasMock),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 
   String? _validarCorreo(String value) {
@@ -90,17 +84,16 @@ class _FormularioLoginState extends State<FormularioLogin> {
 
   String? _validarContrasena(String value) {
     if (value.isEmpty) return 'Ingresa tu contraseña';
-    if (value == contrasenaAdminMock || value == contrasenaUserMock) return null;
+    if (value == contrasenaAdminMock || value == contrasenaUserMock) {
+      return null;
+    }
     if (value.length < 6) {
       return 'Mínimo 6 caracteres';
     }
     return null;
   }
 
-  InputDecoration _decoracionCampo({
-    required String hint,
-    Widget? suffixIcon,
-  }) {
+  InputDecoration _decoracionCampo({required String hint, Widget? suffixIcon}) {
     final borde = OutlineInputBorder(
       borderRadius: BorderRadius.circular(36),
       borderSide: const BorderSide(color: Colors.black, width: 1),
@@ -272,10 +265,7 @@ class _FormularioLoginState extends State<FormularioLogin> {
 
         TextButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const RegistroPantalla()),
-            );
+            Navigator.pushNamed(context, Rutas.registerPage);
           },
           child: const Text(
             'Registrate',

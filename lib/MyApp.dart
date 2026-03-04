@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:petcontrol/ui/core/rutas/app_router.dart';
+import 'package:petcontrol/ui/core/rutas/rutas.dart';
 import 'package:petcontrol/ui/core/tema/tema_app.dart';
-import 'package:petcontrol/ui/features/autenticacion/pantallas/bienvenida_pantalla.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -10,7 +11,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: temaApp,
-      home: const BienvenidaPantalla(),
+      initialRoute: Rutas.bienvenidaPage,
+      onGenerateRoute: AppRouter.onGenerateRoute,
     );
   }
 }
