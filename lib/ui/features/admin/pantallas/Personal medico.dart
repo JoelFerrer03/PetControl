@@ -13,7 +13,6 @@ class PersonalMedicoAdmin extends StatefulWidget {
 class _PersonalMedicoAdminState extends State<PersonalMedicoAdmin> {
   final TextEditingController _busquedaCtrl = TextEditingController();
   final List<MedicoMock> _personal = <MedicoMock>[];
-  String _estadoFiltro = 'Todos';
 
   @override
   void initState() {
@@ -30,13 +29,12 @@ class _PersonalMedicoAdminState extends State<PersonalMedicoAdmin> {
   List<MedicoMock> get _personalFiltrado {
     final q = _busquedaCtrl.text.trim().toLowerCase();
     return _personal.where((m) {
-      final okEstado = _estadoFiltro == 'Todos' || m.estado == _estadoFiltro;
       final okTexto =
           q.isEmpty ||
           m.nombreCompleto.toLowerCase().contains(q) ||
           m.especialidad.toLowerCase().contains(q) ||
           m.correo.toLowerCase().contains(q);
-      return okEstado && okTexto;
+      return okTexto;
     }).toList()..sort((a, b) => a.nombreCompleto.compareTo(b.nombreCompleto));
   }
 
@@ -184,53 +182,6 @@ class _PersonalMedicoAdminState extends State<PersonalMedicoAdmin> {
     );
   }
 
-  void _abrirFiltroEstado() {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: const Color(0xFFE7EBE9),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) {
-        return SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Filtrar por estado',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-                ),
-                const SizedBox(height: 8),
-                for (final estado in <String>['Todos', ...estadosMedicoMock])
-                  ListTile(
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
-                    leading: Icon(
-                      _estadoFiltro == estado
-                          ? Icons.radio_button_checked
-                          : Icons.radio_button_off,
-                      color: _estadoFiltro == estado
-                          ? AppColores.verdepacientes
-                          : Colors.black54,
-                    ),
-                    title: Text(estado),
-                    onTap: () {
-                      setState(() => _estadoFiltro = estado);
-                      Navigator.of(context).pop();
-                    },
-                  ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -310,18 +261,6 @@ class _PersonalMedicoAdminState extends State<PersonalMedicoAdmin> {
                           ),
                         ),
                       ),
-                      IconButton.filledTonal(
-                        onPressed: _abrirFiltroEstado,
-                        style: IconButton.styleFrom(
-                          backgroundColor: const Color(0xFFDCE5E1),
-                          foregroundColor: const Color(0xFF20473E),
-                          side: const BorderSide(
-                            color: Color(0xFF648278),
-                            width: 1,
-                          ),
-                        ),
-                        icon: const Icon(Icons.tune_rounded, size: 20),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 14),
@@ -381,26 +320,6 @@ class _PersonalMedicoAdminState extends State<PersonalMedicoAdmin> {
                             width: 1.25,
                           ),
                         ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFDDE5E1),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: const Color(0xFF8CA198)),
-                    ),
-                    child: Text(
-                      'Filtro: $_estadoFiltro',
-                      style: const TextStyle(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF2F4A42),
                       ),
                     ),
                   ),
