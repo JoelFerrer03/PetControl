@@ -8,43 +8,23 @@ class VistaPacientesAdmin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final alturaCurva = (size.height * 0.66).clamp(560.0, 760.0);
+    final totalEspecies = _pacientes
+        .map((paciente) => paciente.especie.toLowerCase())
+        .toSet()
+        .length;
+    final pesoPromedio = _pacientes.isEmpty
+        ? 0.0
+        : _pacientes.fold<int>(0, (total, paciente) => total + paciente.peso) /
+              _pacientes.length;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFECECEC),
+      backgroundColor: const Color(0xFFF1F5F2),
       body: SafeArea(
         child: Stack(
           children: [
-            const Positioned.fill(child: ColoredBox(color: Color(0xFFECECEC))),
-            const Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.center,
-                    colors: [
-                      AppColores.verdepacientes,
-                      AppColores.verdepacientes,
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: ClipPath(
-                clipper: CurvaClipper(),
-                child: Container(
-                  color: const Color(0xFFECECEC),
-                  height: alturaCurva,
-                  width: double.infinity,
-                ),
-              ),
-            ),
+            const Positioned.fill(child: _FondoPacientes()),
             SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -52,17 +32,68 @@ class VistaPacientesAdmin extends StatelessWidget {
                     onVolver: () => Navigator.of(context).pop(),
                     onNuevo: () => _abrirRegistroPaciente(context),
                   ),
+                  const SizedBox(height: 14),
+                  _ResumenPacientes(
+                    totalPacientes: _pacientes.length,
+                    totalEspecies: totalEspecies,
+                    pesoPromedio: pesoPromedio,
+                  ),
                   const SizedBox(height: 20),
-                  const _BuscadorPacientes(),
-                  const SizedBox(height: 20),
-                  for (var i = 0; i < _pacientes.length; i++) ...[
-                    _TarjetaPaciente(
-                      paciente: _pacientes[i],
-                      onTap: () =>
-                          _abrirDetallePacientePreview(context, _pacientes[i]),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.fromLTRB(14, 16, 14, 14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF8FBF9),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: const Color(0xFFC0D2C8),
+                        width: 1,
+                      ),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x1A183325),
+                          blurRadius: 16,
+                          offset: Offset(0, 6),
+                        ),
+                      ],
                     ),
-                    if (i < _pacientes.length - 1) const SizedBox(height: 30),
-                  ],
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Listado de pacientes',
+                          style: TextStyle(
+                            color: Color(0xFF22362C),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${_pacientes.length} registros activos',
+                          style: const TextStyle(
+                            color: Color(0xFF617468),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        const _BuscadorPacientes(),
+                        const SizedBox(height: 14),
+                        for (var i = 0; i < _pacientes.length; i++) ...[
+                          _TarjetaPaciente(
+                            paciente: _pacientes[i],
+                            onTap: () => _abrirDetallePacientePreview(
+                              context,
+                              _pacientes[i],
+                            ),
+                          ),
+                          if (i < _pacientes.length - 1)
+                            const SizedBox(height: 12),
+                        ],
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -73,31 +104,70 @@ class VistaPacientesAdmin extends StatelessWidget {
   }
 }
 
-class CurvaClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    path.moveTo(0, size.height * 0.33);
-    path.quadraticBezierTo(
-      size.width * 0.22,
-      size.height * 0.46,
-      size.width * 0.52,
-      size.height * 0.55,
-    );
-    path.quadraticBezierTo(
-      size.width * 0.78,
-      size.height * 0.64,
-      size.width,
-      size.height * 0.52,
-    );
-    path.lineTo(size.width, size.height);
-    path.lineTo(0, size.height);
-    path.close();
-    return path;
-  }
+class _FondoPacientes extends StatelessWidget {
+  const _FondoPacientes();
 
   @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(
+          height: 280,
+          child: Stack(
+            children: [
+              Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF1F6C4C),
+                      AppColores.verdepacientes,
+                      Color(0xFF73C08F),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(38),
+                    bottomRight: Radius.circular(38),
+                  ),
+                ),
+              ),
+              const Positioned(
+                top: -36,
+                right: -24,
+                child: _CirculoDecorativo(diametro: 126, opacidad: 0.2),
+              ),
+              const Positioned(
+                bottom: 16,
+                left: -28,
+                child: _CirculoDecorativo(diametro: 104, opacidad: 0.14),
+              ),
+            ],
+          ),
+        ),
+        const Expanded(child: ColoredBox(color: Color(0xFFF1F5F2))),
+      ],
+    );
+  }
+}
+
+class _CirculoDecorativo extends StatelessWidget {
+  const _CirculoDecorativo({required this.diametro, required this.opacidad});
+
+  final double diametro;
+  final double opacidad;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: diametro,
+      height: diametro,
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: opacidad),
+        shape: BoxShape.circle,
+      ),
+    );
+  }
 }
 
 void _abrirRegistroPaciente(BuildContext context) {
@@ -183,47 +253,171 @@ class _Encabezado extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        IconButton(
-          onPressed: onVolver,
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: Colors.black,
-            size: 20,
-          ),
-          visualDensity: VisualDensity.compact,
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
-        ),
-        const SizedBox(width: 10),
-        const Expanded(
-          child: Text(
-            'Pacientes',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.2,
+        Row(
+          children: [
+            _BotonEncabezadoIcono(onTap: onVolver),
+            const Spacer(),
+            FilledButton.icon(
+              onPressed: onNuevo,
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(96, 40),
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                backgroundColor: const Color(0xFF143B2A),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                side: const BorderSide(color: Color(0x88FFFFFF)),
+              ),
+              icon: const Icon(Icons.add_rounded, size: 18),
+              label: const Text(
+                'Nuevo',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
             ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        const Text(
+          'Pacientes',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 33,
+            fontWeight: FontWeight.w900,
+            height: 1,
           ),
         ),
-        FilledButton(
-          onPressed: onNuevo,
-          style: FilledButton.styleFrom(
-            minimumSize: const Size(76, 28),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-            backgroundColor: AppColores.verdepacientes,
-            foregroundColor: Colors.white,
-            side: const BorderSide(color: Colors.black87, width: 1),
-            shape: const StadiumBorder(),
-          ),
-          child: const Text(
-            '+ nuevo',
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+        const SizedBox(height: 6),
+        const Text(
+          'Gestiona el historial, datos de contacto y seguimiento de tus mascotas.',
+          style: TextStyle(
+            color: Color(0xFFE8F8EE),
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],
+    );
+  }
+}
+
+class _BotonEncabezadoIcono extends StatelessWidget {
+  const _BotonEncabezadoIcono({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(13),
+        child: Ink(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: const Color(0x22FFFFFF),
+            borderRadius: BorderRadius.circular(13),
+            border: Border.all(color: const Color(0x55FFFFFF)),
+          ),
+          child: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Colors.white,
+            size: 18,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ResumenPacientes extends StatelessWidget {
+  const _ResumenPacientes({
+    required this.totalPacientes,
+    required this.totalEspecies,
+    required this.pesoPromedio,
+  });
+
+  final int totalPacientes;
+  final int totalEspecies;
+  final double pesoPromedio;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _TarjetaResumen(
+            etiqueta: 'Pacientes',
+            valor: '$totalPacientes',
+            icono: Icons.pets_outlined,
+          ),
+          const SizedBox(width: 10),
+          _TarjetaResumen(
+            etiqueta: 'Especies',
+            valor: '$totalEspecies',
+            icono: Icons.category_outlined,
+          ),
+        ],
+      ),
+    );
+  }
+}
+class _TarjetaResumen extends StatelessWidget {
+  const _TarjetaResumen({
+    required this.etiqueta,
+    required this.valor,
+    required this.icono,
+  });
+
+  final String etiqueta;
+  final String valor;
+  final IconData icono;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        decoration: BoxDecoration(
+          color: const Color(0x2FFFFFFF),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0x54FFFFFF)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icono, color: Colors.white, size: 18),
+            const SizedBox(height: 8),
+            Text(
+              valor,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              etiqueta,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Color(0xDBF4FFF7),
+                fontSize: 11.5,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -234,27 +428,32 @@ class _BuscadorPacientes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 44,
+      height: 46,
       child: TextField(
         cursorColor: AppColores.negro,
         decoration: InputDecoration(
-          hintText: 'Buscar por nombre o dueño...',
-          hintStyle: const TextStyle(color: Color(0xFF5C646A), fontSize: 16),
+          hintText: 'Buscar por nombre, dueño o raza...',
+          hintStyle: const TextStyle(color: Color(0xFF627269), fontSize: 14),
           prefixIcon: const Icon(
-            Icons.search,
+            Icons.search_rounded,
             size: 20,
-            color: Color(0xFF5C646A),
+            color: Color(0xFF5F7066),
+          ),
+          suffixIcon: const Icon(
+            Icons.tune_rounded,
+            size: 20,
+            color: Color(0xFF5F7066),
           ),
           filled: true,
-          fillColor: const Color(0xFFEAEAEA),
+          fillColor: Colors.white,
           contentPadding: const EdgeInsets.symmetric(vertical: 0),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Colors.black87, width: 1.05),
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: Color(0xFFCAD9D0), width: 1),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Colors.black, width: 1.25),
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: Color(0xFF2A6F4D), width: 1.3),
           ),
         ),
       ),
@@ -270,99 +469,184 @@ class _TarjetaPaciente extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final iconoEspecie = _iconoEspecie(paciente.especie);
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(19),
-        child: Container(
-          constraints: const BoxConstraints(minHeight: 96),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-          decoration: BoxDecoration(
-            color: const Color(0xFFE3E3E3),
-            borderRadius: BorderRadius.circular(19),
-            border: Border.all(color: const Color(0xFF4B4B4B), width: 1),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFD2E2DB),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.pets_outlined,
-                  color: Color(0xFF14916A),
-                  size: 19,
-                ),
+        borderRadius: BorderRadius.circular(18),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 114),
+          child: Ink(
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 11),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFFFFFFFF), Color(0xFFF0F7F3)],
               ),
-              const SizedBox(width: 11),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: const Color(0xFFC7D8CE), width: 1),
+            ),
+            child: Column(
+              children: [
+                Row(
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          paciente.nombre,
-                          style: const TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF222222),
-                            height: 1,
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD6E8DE),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Icon(
+                        iconoEspecie,
+                        color: const Color(0xFF2A6F4D),
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  paciente.nombre,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w800,
+                                    color: Color(0xFF1F3028),
+                                    height: 1,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              _ChipEspecie(especie: paciente.especie),
+                            ],
                           ),
-                        ),
-                        const SizedBox(width: 7),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 7,
-                            vertical: 1.8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFBFE4D9),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            paciente.especie,
+                          const SizedBox(height: 4),
+                          Text(
+                            paciente.raza,
                             style: const TextStyle(
-                              fontSize: 9.5,
+                              color: Color(0xFF637268),
+                              fontSize: 13,
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF2D7C62),
                               height: 1,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      paciente.raza,
-                      style: const TextStyle(
-                        color: Color(0xFF646E74),
-                        fontSize: 12.8,
-                        height: 1,
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 3),
-                    Text(
-                      '${paciente.edad} años | ${paciente.peso} kg | ${paciente.dueno}',
-                      style: const TextStyle(
-                        color: Color(0xFF646E74),
-                        fontSize: 12.8,
-                        height: 1,
-                      ),
+                    const SizedBox(width: 8),
+                    const Icon(
+                      Icons.chevron_right_rounded,
+                      color: Color(0xFF6A7D72),
+                      size: 24,
                     ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _ChipDatoPaciente(
+                      icono: Icons.cake_outlined,
+                      valor: '${paciente.edad} años',
+                    ),
+                    _ChipDatoPaciente(
+                      icono: Icons.monitor_weight_outlined,
+                      valor: '${paciente.peso} kg',
+                    ),
+                    _ChipDatoPaciente(
+                      icono: Icons.person_outline_rounded,
+                      valor: paciente.dueno,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  IconData _iconoEspecie(String especie) {
+    switch (especie.toLowerCase()) {
+      case 'gato':
+        return Icons.pets_rounded;
+      case 'conejo':
+        return Icons.cruelty_free_outlined;
+      case 'ave':
+        return Icons.flutter_dash_rounded;
+      default:
+        return Icons.pets_outlined;
+    }
+  }
+}
+
+class _ChipEspecie extends StatelessWidget {
+  const _ChipEspecie({required this.especie});
+
+  final String especie;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: const Color(0xFFDAEFE4),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        especie,
+        style: const TextStyle(
+          fontSize: 11.5,
+          fontWeight: FontWeight.w700,
+          color: Color(0xFF2F7452),
+          height: 1,
+        ),
+      ),
+    );
+  }
+}
+
+class _ChipDatoPaciente extends StatelessWidget {
+  const _ChipDatoPaciente({required this.icono, required this.valor});
+
+  final IconData icono;
+  final String valor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE6F1EB),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icono, size: 14, color: const Color(0xFF3A7157)),
+          const SizedBox(width: 6),
+          Text(
+            valor,
+            style: const TextStyle(
+              color: Color(0xFF416955),
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              height: 1,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -396,35 +680,35 @@ const _pacientes = <_PacienteVista>[
     dueno: 'Maria Garcia',
   ),
   _PacienteVista(
-    nombre: 'Luna',
-    especie: 'Perro',
-    raza: 'Golden Retriever',
-    edad: 3,
-    peso: 28,
-    dueno: 'Maria Garcia',
+    nombre: 'Milo',
+    especie: 'Gato',
+    raza: 'Siames',
+    edad: 2,
+    peso: 5,
+    dueno: 'Carlos Perez',
   ),
   _PacienteVista(
-    nombre: 'Luna',
+    nombre: 'Nala',
     especie: 'Perro',
-    raza: 'Golden Retriever',
-    edad: 3,
-    peso: 28,
-    dueno: 'Maria Garcia',
+    raza: 'Border Collie',
+    edad: 4,
+    peso: 22,
+    dueno: 'Laura Diaz',
   ),
   _PacienteVista(
-    nombre: 'Luna',
-    especie: 'Perro',
-    raza: 'Golden Retriever',
-    edad: 3,
-    peso: 28,
-    dueno: 'Maria Garcia',
+    nombre: 'Coco',
+    especie: 'Conejo',
+    raza: 'Mini Lop',
+    edad: 1,
+    peso: 2,
+    dueno: 'Juan Torres',
   ),
   _PacienteVista(
-    nombre: 'Luna',
-    especie: 'Perro',
-    raza: 'Golden Retriever',
-    edad: 3,
-    peso: 28,
-    dueno: 'Maria Garcia',
+    nombre: 'Simba',
+    especie: 'Gato',
+    raza: 'Maine Coon',
+    edad: 5,
+    peso: 8,
+    dueno: 'Ana Ruiz',
   ),
 ];

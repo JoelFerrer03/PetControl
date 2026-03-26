@@ -35,7 +35,6 @@ class _HistorialMedicoAdminState extends State<HistorialMedicoAdmin> {
     final hoy = DateTime(ahora.year, ahora.month, ahora.day);
     final diasFiltro = _diasParaRango(_fechaSeleccionada);
 
-    // Nuevo: filtros combinados (estado, especie y fecha) aplicados sobre mocks.
     final filtradas = _historialCitas.where((cita) {
       final coincideEstado =
           _estadoSeleccionado == estadoTodosHistorialMock ||
@@ -127,7 +126,7 @@ class _HistorialMedicoAdminState extends State<HistorialMedicoAdmin> {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFFE7EBE9),
+      backgroundColor: const Color(0xFFF2F6F4),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -150,9 +149,9 @@ class _HistorialMedicoAdminState extends State<HistorialMedicoAdmin> {
                     const Text(
                       'Filtrar historial',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 20,
                         fontWeight: FontWeight.w800,
-                        color: AppColores.textoNegro,
+                        color: Color(0xFF1F352B),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -234,9 +233,12 @@ class _HistorialMedicoAdminState extends State<HistorialMedicoAdmin> {
                               Navigator.of(context).pop();
                             },
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: Colors.black87,
-                              side: const BorderSide(color: Colors.black54),
+                              foregroundColor: const Color(0xFF2A3E35),
+                              side: const BorderSide(color: Color(0xFF8BA49A)),
                               minimumSize: const Size.fromHeight(44),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
                             child: const Text('Limpiar'),
                           ),
@@ -253,7 +255,7 @@ class _HistorialMedicoAdminState extends State<HistorialMedicoAdmin> {
                               Navigator.of(context).pop();
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColores.verdepacientes,
+                              backgroundColor: const Color(0xFF1E6246),
                               foregroundColor: Colors.white,
                               minimumSize: const Size.fromHeight(44),
                               shape: RoundedRectangleBorder(
@@ -261,7 +263,7 @@ class _HistorialMedicoAdminState extends State<HistorialMedicoAdmin> {
                               ),
                             ),
                             child: const Text(
-                              'Aplicar filtros',
+                              'Aplicar',
                               style: TextStyle(fontWeight: FontWeight.w700),
                             ),
                           ),
@@ -281,14 +283,14 @@ class _HistorialMedicoAdminState extends State<HistorialMedicoAdmin> {
   InputDecoration _decoracionFiltro() {
     return InputDecoration(
       filled: true,
-      fillColor: const Color(0xFFF0F3F1),
+      fillColor: Colors.white,
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: Color(0xFFB9C3BF)),
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Color(0xFFCAD9D0)),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: Color(0xFF2D8A6C), width: 1.4),
       ),
     );
@@ -311,7 +313,7 @@ class _HistorialMedicoAdminState extends State<HistorialMedicoAdmin> {
           DetalleCampo(etiqueta: 'Procedimiento', valor: cita.procedimiento),
           DetalleCampo(etiqueta: 'Fecha y hora', valor: fechaFormateada),
           DetalleCampo(etiqueta: 'Doctor', valor: cita.doctor),
-          DetalleCampo(etiqueta: 'Dueño', valor: cita.dueno),
+          DetalleCampo(etiqueta: 'Dueno', valor: cita.dueno),
           DetalleCampo(etiqueta: 'Descripcion', valor: cita.descripcion),
         ],
       ),
@@ -321,44 +323,15 @@ class _HistorialMedicoAdminState extends State<HistorialMedicoAdmin> {
   @override
   Widget build(BuildContext context) {
     final historialFiltrado = _historialFiltrado;
-    final size = MediaQuery.of(context).size;
-    final alturaCurva = (size.height * 0.64).clamp(560.0, 760.0);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFECECEC),
+      backgroundColor: const Color(0xFFF1F5F2),
       body: SafeArea(
         child: Stack(
           children: [
-            const Positioned.fill(child: ColoredBox(color: Color(0xFFECECEC))),
-            const Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.center,
-                    colors: [
-                      AppColores.verdepacientes,
-                      AppColores.verdepacientes,
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: ClipPath(
-                clipper: _CurvaFondoHistorialClipper(),
-                child: Container(
-                  color: const Color(0xFFECECEC),
-                  height: alturaCurva,
-                  width: double.infinity,
-                ),
-              ),
-            ),
+            const Positioned.fill(child: _FondoHistorial()),
             SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 34),
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -366,47 +339,99 @@ class _HistorialMedicoAdminState extends State<HistorialMedicoAdmin> {
                     onVolver: () => Navigator.of(context).pop(),
                     onFiltrar: _abrirFiltroPopup,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14),
                   _ResumenHistorial(
                     total: historialFiltrado.length,
                     finalizadas: _contarEstado('finalizada'),
                     canceladas: _contarEstado('cancelada'),
                   ),
-                  const SizedBox(height: 16),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      _ChipFiltroActivo(texto: 'Estado: $_estadoSeleccionado'),
-                      _ChipFiltroActivo(
-                        texto: 'Especie: $_especieSeleccionada',
+                  const SizedBox(height: 20),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.fromLTRB(14, 16, 14, 14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF8FBF9),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: const Color(0xFFC0D2C8),
+                        width: 1,
                       ),
-                      _ChipFiltroActivo(texto: 'Fecha: $_fechaSeleccionada'),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  if (historialFiltrado.isEmpty)
-                    const _EstadoVacioHistorial()
-                  else
-                    for (var i = 0; i < historialFiltrado.length; i++) ...[
-                      _TarjetaHistorialCita(
-                        cita: historialFiltrado[i],
-                        fechaFormateada: _formatearFecha(
-                          historialFiltrado[i].fechaHora,
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x1A183325),
+                          blurRadius: 16,
+                          offset: Offset(0, 6),
                         ),
-                        colorFondoEstado: _colorFondoEstado(
-                          historialFiltrado[i].estado,
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Historial de citas',
+                          style: TextStyle(
+                            color: Color(0xFF22362C),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
-                        colorTextoEstado: _colorTextoEstado(
-                          historialFiltrado[i].estado,
+                        const SizedBox(height: 4),
+                        Text(
+                          '${historialFiltrado.length} registros para los filtros actuales',
+                          style: const TextStyle(
+                            color: Color(0xFF617468),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                        iconoEstado: _iconoEstado(historialFiltrado[i].estado),
-                        onTap: () =>
-                            _abrirDetalleHistorial(historialFiltrado[i]),
-                      ),
-                      if (i < historialFiltrado.length - 1)
                         const SizedBox(height: 14),
-                    ],
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            _ChipFiltroActivo(
+                              texto: 'Estado: $_estadoSeleccionado',
+                            ),
+                            _ChipFiltroActivo(
+                              texto: 'Especie: $_especieSeleccionada',
+                            ),
+                            _ChipFiltroActivo(
+                              texto: 'Fecha: $_fechaSeleccionada',
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 14),
+                        if (historialFiltrado.isEmpty)
+                          const _EstadoVacioHistorial()
+                        else
+                          for (
+                            var i = 0;
+                            i < historialFiltrado.length;
+                            i++
+                          ) ...[
+                            _TarjetaHistorialCita(
+                              cita: historialFiltrado[i],
+                              fechaFormateada: _formatearFecha(
+                                historialFiltrado[i].fechaHora,
+                              ),
+                              colorFondoEstado: _colorFondoEstado(
+                                historialFiltrado[i].estado,
+                              ),
+                              colorTextoEstado: _colorTextoEstado(
+                                historialFiltrado[i].estado,
+                              ),
+                              iconoEstado: _iconoEstado(
+                                historialFiltrado[i].estado,
+                              ),
+                              onTap: () =>
+                                  _abrirDetalleHistorial(historialFiltrado[i]),
+                            ),
+                            if (i < historialFiltrado.length - 1)
+                              const SizedBox(height: 12),
+                          ],
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -417,31 +442,79 @@ class _HistorialMedicoAdminState extends State<HistorialMedicoAdmin> {
   }
 }
 
-class _CurvaFondoHistorialClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    path.moveTo(0, size.height * 0.28);
-    path.quadraticBezierTo(
-      size.width * 0.20,
-      size.height * 0.42,
-      size.width * 0.50,
-      size.height * 0.52,
-    );
-    path.quadraticBezierTo(
-      size.width * 0.78,
-      size.height * 0.61,
-      size.width,
-      size.height * 0.49,
-    );
-    path.lineTo(size.width, size.height);
-    path.lineTo(0, size.height);
-    path.close();
-    return path;
-  }
+class _FondoHistorial extends StatelessWidget {
+  const _FondoHistorial();
 
   @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(
+          height: 280,
+          child: Stack(
+            children: [
+              Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF1B664A),
+                      AppColores.verdepacientes,
+                      Color(0xFF6EBC89),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(38),
+                    bottomRight: Radius.circular(38),
+                  ),
+                ),
+              ),
+              const Positioned(
+                top: -34,
+                right: -24,
+                child: _CirculoDecorativoHistorial(
+                  diametro: 126,
+                  opacidad: 0.2,
+                ),
+              ),
+              const Positioned(
+                bottom: 18,
+                left: -24,
+                child: _CirculoDecorativoHistorial(
+                  diametro: 96,
+                  opacidad: 0.14,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Expanded(child: ColoredBox(color: Color(0xFFF1F5F2))),
+      ],
+    );
+  }
+}
+
+class _CirculoDecorativoHistorial extends StatelessWidget {
+  const _CirculoDecorativoHistorial({
+    required this.diametro,
+    required this.opacidad,
+  });
+
+  final double diametro;
+  final double opacidad;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: diametro,
+      height: diametro,
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: opacidad),
+        shape: BoxShape.circle,
+      ),
+    );
+  }
 }
 
 class _EncabezadoHistorial extends StatelessWidget {
@@ -452,43 +525,84 @@ class _EncabezadoHistorial extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        IconButton(
-          onPressed: onVolver,
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: Colors.black,
-            size: 22,
-          ),
-          visualDensity: VisualDensity.compact,
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
-        ),
-        const SizedBox(width: 10),
-        const Expanded(
-          child: Text(
-            'Historial de citas',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.2,
-              height: 1,
+        Row(
+          children: [
+            _BotonEncabezadoIcono(onTap: onVolver),
+            const Spacer(),
+            FilledButton.icon(
+              onPressed: onFiltrar,
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(108, 40),
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                backgroundColor: const Color(0xFF143B2A),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                side: const BorderSide(color: Color(0x88FFFFFF)),
+              ),
+              icon: const Icon(Icons.tune_rounded, size: 18),
+              label: const Text(
+                'Filtros',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
             ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        const Text(
+          'Historial de citas',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 33,
+            fontWeight: FontWeight.w900,
+            height: 1,
           ),
         ),
-        IconButton.filledTonal(
-          onPressed: onFiltrar,
-          style: IconButton.styleFrom(
-            backgroundColor: const Color(0xFFDCE5E1),
-            foregroundColor: const Color(0xFF20473E),
-            side: const BorderSide(color: Color(0xFF648278), width: 1),
+        const SizedBox(height: 6),
+        const Text(
+          'Consulta el historial clinico y filtra eventos por estado, fecha y especie.',
+          style: TextStyle(
+            color: Color(0xFFE8F8EE),
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
           ),
-          icon: const Icon(Icons.tune_rounded, size: 20),
-          tooltip: 'Filtrar',
         ),
       ],
+    );
+  }
+}
+
+class _BotonEncabezadoIcono extends StatelessWidget {
+  const _BotonEncabezadoIcono({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(13),
+        child: Ink(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: const Color(0x22FFFFFF),
+            borderRadius: BorderRadius.circular(13),
+            border: Border.all(color: const Color(0x55FFFFFF)),
+          ),
+          child: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Colors.white,
+            size: 18,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -511,19 +625,19 @@ class _ResumenHistorial extends StatelessWidget {
         _ItemResumen(
           valor: '$total',
           etiqueta: 'Total',
-          color: AppColores.textoAzul,
+          icono: Icons.inventory_2_outlined,
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 10),
         _ItemResumen(
           valor: '$finalizadas',
           etiqueta: 'Finalizadas',
-          color: AppColores.verdepacientes,
+          icono: Icons.check_circle_outline,
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 10),
         _ItemResumen(
           valor: '$canceladas',
           etiqueta: 'Canceladas',
-          color: const Color(0xFF9D3B3B),
+          icono: Icons.cancel_outlined,
         ),
       ],
     );
@@ -534,44 +648,47 @@ class _ItemResumen extends StatelessWidget {
   const _ItemResumen({
     required this.valor,
     required this.etiqueta,
-    required this.color,
+    required this.icono,
   });
 
   final String valor;
   final String etiqueta;
-  final Color color;
+  final IconData icono;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        constraints: const BoxConstraints(minHeight: 96),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(
-          color: const Color(0xFFE6EAEA),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.black38, width: 1.1),
+          color: const Color(0x2FFFFFFF),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0x54FFFFFF)),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Icon(icono, color: Colors.white, size: 18),
+            const SizedBox(height: 8),
             Text(
               valor,
-              style: TextStyle(
-                color: color,
-                fontSize: 30,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
                 fontWeight: FontWeight.w800,
-                height: 1,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 2),
             Text(
               etiqueta,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                color: Color(0xFF5B656B),
-                fontSize: 14,
+                color: Color(0xDBF4FFF7),
+                fontSize: 11.5,
                 fontWeight: FontWeight.w600,
-                height: 1.1,
               ),
             ),
           ],
@@ -589,18 +706,18 @@ class _ChipFiltroActivo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
       decoration: BoxDecoration(
-        color: const Color(0xFFDDE5E1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFF8CA198)),
+        color: const Color(0xFFE6F1EB),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
         texto,
         style: const TextStyle(
           fontSize: 11.5,
-          fontWeight: FontWeight.w600,
-          color: Color(0xFF2F4A42),
+          fontWeight: FontWeight.w700,
+          color: Color(0xFF3C6651),
+          height: 1,
         ),
       ),
     );
@@ -631,112 +748,125 @@ class _TarjetaHistorialCita extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(18),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-          decoration: BoxDecoration(
-            color: const Color(0xFFE8E8E8),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: const Color(0xFF4B4B4B), width: 1),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: colorFondoEstado,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(iconoEstado, color: colorTextoEstado, size: 20),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 124),
+          child: Ink(
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 11),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFFFFFFFF), Color(0xFFF0F7F3)],
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 6,
-                      children: [
-                        Text(
-                          cita.nombreMascota,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF1D2730),
-                            height: 1,
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFD9E8E1),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            cita.especie,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: const Color(0xFFC7D8CE), width: 1),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    color: colorFondoEstado,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(iconoEstado, color: colorTextoEstado, size: 21),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 6,
+                        children: [
+                          Text(
+                            cita.nombreMascota,
                             style: const TextStyle(
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF2D7C62),
+                              fontSize: 17,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF1F3028),
+                              height: 1,
                             ),
                           ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: colorFondoEstado,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            cita.estado,
-                            style: TextStyle(
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.w700,
-                              color: colorTextoEstado,
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFDAEFE4),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              cita.especie,
+                              style: const TextStyle(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF2F7452),
+                                height: 1,
+                              ),
                             ),
                           ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: colorFondoEstado,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              cita.estado,
+                              style: TextStyle(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w700,
+                                color: colorTextoEstado,
+                                height: 1,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        cita.procedimiento,
+                        style: const TextStyle(
+                          color: Color(0xFF4B5F55),
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w700,
+                          height: 1,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      cita.procedimiento,
-                      style: const TextStyle(
-                        color: Color(0xFF4F5A61),
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w600,
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '$fechaFormateada | ${cita.doctor}',
-                      style: const TextStyle(
-                        color: Color(0xFF637077),
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w500,
+                      const SizedBox(height: 6),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 7,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE8F2ED),
+                          borderRadius: BorderRadius.circular(11),
+                        ),
+                        child: Text(
+                          '$fechaFormateada | ${cita.doctor}\nDueno: ${cita.dueno}',
+                          style: const TextStyle(
+                            color: Color(0xFF587066),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            height: 1.2,
+                          ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Dueño: ${cita.dueno}',
-                      style: const TextStyle(
-                        color: Color(0xFF637077),
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -751,21 +881,21 @@ class _EstadoVacioHistorial extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 22),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       decoration: BoxDecoration(
-        color: const Color(0xFFE8E8E8),
+        color: const Color(0xFFEEF5F1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFB6B6B6)),
+        border: Border.all(color: const Color(0xFFC6D6CD)),
       ),
       child: const Column(
         children: [
-          Icon(Icons.search_off_rounded, color: Color(0xFF5E6970), size: 30),
+          Icon(Icons.search_off_rounded, color: Color(0xFF60786C), size: 32),
           SizedBox(height: 12),
           Text(
             'No hay citas que coincidan con los filtros.',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Color(0xFF5E6970),
+              color: Color(0xFF5E756A),
               fontSize: 13.5,
               fontWeight: FontWeight.w600,
             ),

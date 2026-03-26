@@ -184,18 +184,16 @@ class _PersonalMedicoAdminState extends State<PersonalMedicoAdmin> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final alturaCurva = (size.height * 0.62).clamp(540.0, 760.0);
     final lista = _personalFiltrado;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFECECEC),
+      backgroundColor: const Color(0xFFF1F5F2),
       floatingActionButton: SizedBox(
         width: 62,
         height: 62,
         child: FloatingActionButton(
           onPressed: _abrirFormularioNuevoMedico,
-          backgroundColor: AppColores.verdepacientes,
+          backgroundColor: const Color(0xFF1E6246),
           foregroundColor: Colors.white,
           child: const Icon(Icons.add, size: 34),
         ),
@@ -203,65 +201,15 @@ class _PersonalMedicoAdminState extends State<PersonalMedicoAdmin> {
       body: SafeArea(
         child: Stack(
           children: [
-            const Positioned.fill(child: ColoredBox(color: Color(0xFFECECEC))),
-            const Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.center,
-                    colors: [
-                      AppColores.verdepacientes,
-                      AppColores.verdepacientes,
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: ClipPath(
-                clipper: _CurvaPersonalClipper(),
-                child: Container(
-                  color: const Color(0xFFECECEC),
-                  height: alturaCurva,
-                  width: double.infinity,
-                ),
-              ),
-            ),
+            const Positioned.fill(child: _FondoPersonal()),
             SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 100),
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 100),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        icon: const Icon(
-                          Icons.arrow_back_ios_new_rounded,
-                          size: 22,
-                        ),
-                        visualDensity: VisualDensity.compact,
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(
-                          minWidth: 24,
-                          minHeight: 24,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      const Expanded(
-                        child: Text(
-                          'Personal medico',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ],
+                  _EncabezadoPersonal(
+                    onVolver: () => Navigator.of(context).pop(),
+                    totalResultados: lista.length,
                   ),
                   const SizedBox(height: 14),
                   Row(
@@ -269,74 +217,84 @@ class _PersonalMedicoAdminState extends State<PersonalMedicoAdmin> {
                       _ResumenBox(
                         valor: '${_personal.length}',
                         etiqueta: 'Total',
-                        color: AppColores.textoAzul,
+                        icono: Icons.badge_outlined,
                       ),
                       const SizedBox(width: 10),
                       _ResumenBox(
                         valor: '${_conteoEstado('Activo')}',
                         etiqueta: 'Activos',
-                        color: AppColores.verdepacientes,
+                        icono: Icons.check_circle_outline,
                       ),
                       const SizedBox(width: 10),
                       _ResumenBox(
                         valor: '${_conteoEstado('Vacaciones')}',
                         etiqueta: 'Vacaciones',
-                        color: const Color(0xFF8A6A40),
+                        icono: Icons.beach_access_outlined,
                       ),
                     ],
                   ),
-                  const SizedBox(height: 14),
-                  SizedBox(
-                    height: 44,
-                    child: TextField(
-                      controller: _busquedaCtrl,
-                      onChanged: (_) => setState(() {}),
-                      cursorColor: AppColores.negro,
-                      decoration: InputDecoration(
-                        hintText: 'Buscar por nombre, especialidad o correo...',
-                        hintStyle: const TextStyle(
-                          color: Color(0xFF5C646A),
-                          fontSize: 14,
-                        ),
-                        prefixIcon: const Icon(
-                          Icons.search,
-                          size: 20,
-                          color: Color(0xFF5C646A),
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xFFEAEAEA),
-                        contentPadding: const EdgeInsets.symmetric(vertical: 0),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Colors.black87,
-                            width: 1.05,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Colors.black,
-                            width: 1.25,
-                          ),
-                        ),
+                  const SizedBox(height: 20),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.fromLTRB(14, 16, 14, 14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF8FBF9),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: const Color(0xFFC0D2C8),
+                        width: 1,
                       ),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x1A183325),
+                          blurRadius: 16,
+                          offset: Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Equipo medico',
+                          style: TextStyle(
+                            color: Color(0xFF22362C),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${lista.length} profesionales visibles',
+                          style: const TextStyle(
+                            color: Color(0xFF617468),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        _BuscadorPersonal(
+                          controller: _busquedaCtrl,
+                          onChanged: (_) => setState(() {}),
+                        ),
+                        const SizedBox(height: 14),
+                        if (lista.isEmpty)
+                          const _VacioPersonal()
+                        else
+                          for (var i = 0; i < lista.length; i++) ...[
+                            _TarjetaMedico(
+                              medico: lista[i],
+                              iniciales: _iniciales(lista[i].nombreCompleto),
+                              colorBg: _estadoBg(lista[i].estado),
+                              colorText: _estadoText(lista[i].estado),
+                              onTap: () => _verDetalle(lista[i]),
+                            ),
+                            if (i < lista.length - 1)
+                              const SizedBox(height: 12),
+                          ],
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  if (lista.isEmpty)
-                    const _VacioPersonal()
-                  else
-                    for (var i = 0; i < lista.length; i++) ...[
-                      _TarjetaMedico(
-                        medico: lista[i],
-                        iniciales: _iniciales(lista[i].nombreCompleto),
-                        colorBg: _estadoBg(lista[i].estado),
-                        colorText: _estadoText(lista[i].estado),
-                        onTap: () => _verDetalle(lista[i]),
-                      ),
-                      if (i < lista.length - 1) const SizedBox(height: 14),
-                    ],
                 ],
               ),
             ),
@@ -347,73 +305,252 @@ class _PersonalMedicoAdminState extends State<PersonalMedicoAdmin> {
   }
 }
 
-class _CurvaPersonalClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    path.moveTo(0, size.height * 0.30);
-    path.quadraticBezierTo(
-      size.width * 0.20,
-      size.height * 0.44,
-      size.width * 0.50,
-      size.height * 0.54,
-    );
-    path.quadraticBezierTo(
-      size.width * 0.80,
-      size.height * 0.63,
-      size.width,
-      size.height * 0.51,
-    );
-    path.lineTo(size.width, size.height);
-    path.lineTo(0, size.height);
-    path.close();
-    return path;
-  }
+class _FondoPersonal extends StatelessWidget {
+  const _FondoPersonal();
 
   @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(
+          height: 280,
+          child: Stack(
+            children: [
+              Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF1B664A),
+                      AppColores.verdepacientes,
+                      Color(0xFF6EBC89),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(38),
+                    bottomRight: Radius.circular(38),
+                  ),
+                ),
+              ),
+              const Positioned(
+                top: -34,
+                right: -24,
+                child: _CirculoDecorativoPersonal(diametro: 126, opacidad: 0.2),
+              ),
+              const Positioned(
+                bottom: 18,
+                left: -24,
+                child: _CirculoDecorativoPersonal(diametro: 96, opacidad: 0.14),
+              ),
+            ],
+          ),
+        ),
+        const Expanded(child: ColoredBox(color: Color(0xFFF1F5F2))),
+      ],
+    );
+  }
+}
+
+class _CirculoDecorativoPersonal extends StatelessWidget {
+  const _CirculoDecorativoPersonal({
+    required this.diametro,
+    required this.opacidad,
+  });
+
+  final double diametro;
+  final double opacidad;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: diametro,
+      height: diametro,
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: opacidad),
+        shape: BoxShape.circle,
+      ),
+    );
+  }
+}
+
+class _EncabezadoPersonal extends StatelessWidget {
+  const _EncabezadoPersonal({
+    required this.onVolver,
+    required this.totalResultados,
+  });
+
+  final VoidCallback onVolver;
+  final int totalResultados;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            _BotonEncabezadoIcono(onTap: onVolver),
+            const Spacer(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+              decoration: BoxDecoration(
+                color: const Color(0x2FFFFFFF),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0x55FFFFFF)),
+              ),
+              child: Text(
+                '$totalResultados resultados',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        const Text(
+          'Personal medico',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 33,
+            fontWeight: FontWeight.w900,
+            height: 1,
+          ),
+        ),
+        const SizedBox(height: 6),
+        const Text(
+          'Gestiona especialistas, jornadas y disponibilidad del equipo clinico.',
+          style: TextStyle(
+            color: Color(0xFFE8F8EE),
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _BotonEncabezadoIcono extends StatelessWidget {
+  const _BotonEncabezadoIcono({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(13),
+        child: Ink(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: const Color(0x22FFFFFF),
+            borderRadius: BorderRadius.circular(13),
+            border: Border.all(color: const Color(0x55FFFFFF)),
+          ),
+          child: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Colors.white,
+            size: 18,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BuscadorPersonal extends StatelessWidget {
+  const _BuscadorPersonal({required this.controller, required this.onChanged});
+
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 46,
+      child: TextField(
+        controller: controller,
+        onChanged: onChanged,
+        cursorColor: AppColores.negro,
+        decoration: InputDecoration(
+          hintText: 'Buscar por nombre, especialidad o correo...',
+          hintStyle: const TextStyle(color: Color(0xFF627269), fontSize: 14),
+          prefixIcon: const Icon(
+            Icons.search_rounded,
+            size: 20,
+            color: Color(0xFF5F7066),
+          ),
+          suffixIcon: const Icon(
+            Icons.local_hospital_outlined,
+            size: 20,
+            color: Color(0xFF5F7066),
+          ),
+          filled: true,
+          fillColor: Colors.white,
+          contentPadding: const EdgeInsets.symmetric(vertical: 0),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: Color(0xFFCAD9D0), width: 1),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: Color(0xFF2A6F4D), width: 1.3),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _ResumenBox extends StatelessWidget {
   const _ResumenBox({
     required this.valor,
     required this.etiqueta,
-    required this.color,
+    required this.icono,
   });
 
   final String valor;
   final String etiqueta;
-  final Color color;
+  final IconData icono;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        constraints: const BoxConstraints(minHeight: 86),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(
-          color: const Color(0xFFE6EAEA),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.black38, width: 1.05),
+          color: const Color(0x2FFFFFFF),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0x54FFFFFF)),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Icon(icono, color: Colors.white, size: 18),
+            const SizedBox(height: 8),
             Text(
               valor,
-              style: TextStyle(
-                color: color,
-                fontSize: 28,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
                 fontWeight: FontWeight.w800,
-                height: 1,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Text(
               etiqueta,
               style: const TextStyle(
-                color: Color(0xFF5B656B),
-                fontSize: 13,
+                color: Color(0xDBF4FFF7),
+                fontSize: 11.5,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -446,108 +583,169 @@ class _TarjetaMedico extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(18),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-          decoration: BoxDecoration(
-            color: const Color(0xFFE8E8E8),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: const Color(0xFF4B4B4B), width: 1),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CircleAvatar(
-                radius: 22,
-                backgroundColor: const Color(0xFFD7E5DE),
-                child: Text(
-                  iniciales,
-                  style: const TextStyle(
-                    color: Color(0xFF1D4E3E),
-                    fontWeight: FontWeight.w800,
-                    fontSize: 14,
-                  ),
-                ),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 122),
+          child: Ink(
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 11),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFFFFFFFF), Color(0xFFF0F7F3)],
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: const Color(0xFFC7D8CE), width: 1),
+            ),
+            child: Column(
+              children: [
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 6,
-                      children: [
-                        Text(
-                          medico.nombreCompleto,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF1D2730),
-                            height: 1,
-                          ),
+                    CircleAvatar(
+                      radius: 24,
+                      backgroundColor: const Color(0xFFD7E5DE),
+                      child: Text(
+                        iniciales,
+                        style: const TextStyle(
+                          color: Color(0xFF1D4E3E),
+                          fontWeight: FontWeight.w800,
+                          fontSize: 14,
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFD9E8E1),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            medico.especialidad,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            medico.nombreCompleto,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF2D7C62),
+                              fontSize: 17,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF1F3028),
+                              height: 1,
                             ),
                           ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
+                          const SizedBox(height: 6),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              _ChipMedico(
+                                color: const Color(0xFFDAEFE4),
+                                textColor: const Color(0xFF2F7452),
+                                texto: medico.especialidad,
+                              ),
+                              _ChipMedico(
+                                color: colorBg,
+                                textColor: colorText,
+                                texto: medico.estado,
+                              ),
+                            ],
                           ),
-                          decoration: BoxDecoration(
-                            color: colorBg,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            medico.estado,
-                            style: TextStyle(
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.w700,
-                              color: colorText,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      medico.correo,
-                      style: const TextStyle(
-                        color: Color(0xFF4F5A61),
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 3),
-                    Text(
-                      medico.telefono,
-                      style: const TextStyle(
-                        color: Color(0xFF637077),
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    const SizedBox(width: 8),
+                    const Icon(
+                      Icons.chevron_right_rounded,
+                      color: Color(0xFF6A7D72),
+                      size: 24,
                     ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _ChipInfoMedico(
+                      icono: Icons.mail_outline_rounded,
+                      valor: medico.correo,
+                    ),
+                    _ChipInfoMedico(
+                      icono: Icons.phone_outlined,
+                      valor: medico.telefono,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _ChipMedico extends StatelessWidget {
+  const _ChipMedico({
+    required this.color,
+    required this.textColor,
+    required this.texto,
+  });
+
+  final Color color;
+  final Color textColor;
+  final String texto;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        texto,
+        style: TextStyle(
+          fontSize: 11.5,
+          fontWeight: FontWeight.w700,
+          color: textColor,
+          height: 1,
+        ),
+      ),
+    );
+  }
+}
+
+class _ChipInfoMedico extends StatelessWidget {
+  const _ChipInfoMedico({required this.icono, required this.valor});
+
+  final IconData icono;
+  final String valor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE6F1EB),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icono, size: 14, color: const Color(0xFF3A7157)),
+          const SizedBox(width: 6),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 195),
+            child: Text(
+              valor,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Color(0xFF416955),
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                height: 1,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -560,21 +758,21 @@ class _VacioPersonal extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 22),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       decoration: BoxDecoration(
-        color: const Color(0xFFE8E8E8),
+        color: const Color(0xFFEEF5F1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFB6B6B6)),
+        border: Border.all(color: const Color(0xFFC6D6CD)),
       ),
       child: const Column(
         children: [
-          Icon(Icons.search_off_rounded, color: Color(0xFF5E6970), size: 30),
+          Icon(Icons.search_off_rounded, color: Color(0xFF60786C), size: 32),
           SizedBox(height: 12),
           Text(
             'No hay personal medico para los filtros actuales.',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Color(0xFF5E6970),
+              color: Color(0xFF5E756A),
               fontSize: 13.5,
               fontWeight: FontWeight.w600,
             ),
@@ -655,22 +853,22 @@ class _FormularioNuevoMedicoState extends State<_FormularioNuevoMedico> {
         fontWeight: FontWeight.w500,
       ),
       filled: true,
-      fillColor: const Color(0xFFE8EBEA),
+      fillColor: Colors.white,
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: Color(0xFFCDD4D1), width: 1.2),
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Color(0xFFCAD9D0), width: 1),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: Color(0xFF5ABF9A), width: 1.7),
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Color(0xFF2A6F4D), width: 1.4),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: Color(0xFFB53939), width: 1.2),
       ),
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: Color(0xFFB53939), width: 1.7),
       ),
       errorStyle: const TextStyle(height: 0.01),
@@ -714,9 +912,9 @@ class _FormularioNuevoMedicoState extends State<_FormularioNuevoMedico> {
       constraints: BoxConstraints(maxHeight: h),
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFDCDDDB),
+        color: const Color(0xFFF2F7F4),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFF1A95F7), width: 2),
+        border: Border.all(color: const Color(0xFFC6D7CE), width: 1.2),
       ),
       child: Form(
         key: _formKey,
@@ -730,7 +928,7 @@ class _FormularioNuevoMedicoState extends State<_FormularioNuevoMedico> {
                     child: Text(
                       'Registrar nuevo medico',
                       style: TextStyle(
-                        color: Color(0xFF223633),
+                        color: Color(0xFF22362C),
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
                       ),
@@ -843,11 +1041,11 @@ class _FormularioNuevoMedicoState extends State<_FormularioNuevoMedico> {
                   onPressed: _guardar,
                   style: ElevatedButton.styleFrom(
                     elevation: 0,
-                    backgroundColor: const Color(0xFF0E8D63),
+                    backgroundColor: const Color(0xFF1E6246),
                     foregroundColor: Colors.white,
                     minimumSize: const Size.fromHeight(44),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   child: const Text(

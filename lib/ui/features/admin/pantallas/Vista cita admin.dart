@@ -9,44 +9,20 @@ class VistaCitaAdmin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final alturaCurva = (size.height * 0.56).clamp(430.0, 650.0);
+    final totalHoy = citasHoyMock.length;
+    final totalProximas = citasProximasMock.length;
+    final confirmadas = citasHoyMock
+        .where((cita) => cita.estado.toLowerCase() == 'confirmada')
+        .length;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFECECEC),
+      backgroundColor: const Color(0xFFF1F5F2),
       body: SafeArea(
         child: Stack(
           children: [
-            const Positioned.fill(child: ColoredBox(color: Color(0xFFECECEC))),
-            const Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.center,
-                    colors: [
-                      AppColores.verdepacientes,
-                      AppColores.verdepacientes,
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: ClipPath(
-                clipper: _CurvaFondoCitasClipper(),
-                child: Container(
-                  color: const Color(0xFFECECEC),
-                  height: alturaCurva,
-                  width: double.infinity,
-                ),
-              ),
-            ),
+            const Positioned.fill(child: _FondoCitas()),
             SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 34),
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -54,57 +30,144 @@ class VistaCitaAdmin extends StatelessWidget {
                     onVolver: () => Navigator.of(context).pop(),
                     onNuevo: () => _abrirRegistroCita(context),
                   ),
-                  const SizedBox(height: 28),
-                  const Text(
-                    'Citas programadas para hoy',
-                    style: TextStyle(
-                      color: AppColores.textoNegro,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w800,
-                      height: 1,
-                    ),
+                  const SizedBox(height: 14),
+                  _ResumenCitas(
+                    totalHoy: totalHoy,
+                    totalProximas: totalProximas,
+                    confirmadas: confirmadas,
                   ),
                   const SizedBox(height: 20),
-                  for (var i = 0; i < citasHoyMock.length; i++) ...[
-                    _TarjetaCita(
-                      cita: citasHoyMock[i],
-                      onTap: () => _abrirDetalleCitaPreview(
-                        context,
-                        citasHoyMock[i],
-                        bloqueAgenda: 'Hoy',
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.fromLTRB(14, 16, 14, 14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF8FBF9),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: const Color(0xFFC0D2C8),
+                        width: 1,
                       ),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x1A183325),
+                          blurRadius: 16,
+                          offset: Offset(0, 6),
+                        ),
+                      ],
                     ),
-                    if (i < citasHoyMock.length - 1) const SizedBox(height: 16),
-                  ],
-                  const SizedBox(height: 22),
-                  const Text(
-                    'Proximas citas',
-                    style: TextStyle(
-                      color: AppColores.textoNegro,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w800,
-                      height: 1,
-                      letterSpacing: 0.2,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Agenda de citas',
+                          style: TextStyle(
+                            color: Color(0xFF22362C),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${totalHoy + totalProximas} registros visibles',
+                          style: const TextStyle(
+                            color: Color(0xFF617468),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        _SeccionAgenda(
+                          titulo: 'Programadas para hoy',
+                          cantidad: totalHoy,
+                          citas: citasHoyMock,
+                          bloqueAgenda: 'Hoy',
+                        ),
+                        const SizedBox(height: 12),
+                        const Divider(color: Color(0xFFD8E4DE), thickness: 1),
+                        const SizedBox(height: 12),
+                        _SeccionAgenda(
+                          titulo: 'Proximas citas',
+                          cantidad: totalProximas,
+                          citas: citasProximasMock,
+                          bloqueAgenda: 'Proxima',
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  for (var i = 0; i < citasProximasMock.length; i++) ...[
-                    _TarjetaCita(
-                      cita: citasProximasMock[i],
-                      onTap: () => _abrirDetalleCitaPreview(
-                        context,
-                        citasProximasMock[i],
-                        bloqueAgenda: 'Proxima',
-                      ),
-                    ),
-                    if (i < citasProximasMock.length - 1)
-                      const SizedBox(height: 16),
-                  ],
                 ],
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _FondoCitas extends StatelessWidget {
+  const _FondoCitas();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(
+          height: 280,
+          child: Stack(
+            children: [
+              Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF1A6549),
+                      AppColores.verdepacientes,
+                      Color(0xFF72BE8D),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(38),
+                    bottomRight: Radius.circular(38),
+                  ),
+                ),
+              ),
+              const Positioned(
+                top: -34,
+                right: -24,
+                child: _CirculoDecorativoCitas(diametro: 126, opacidad: 0.2),
+              ),
+              const Positioned(
+                bottom: 18,
+                left: -24,
+                child: _CirculoDecorativoCitas(diametro: 96, opacidad: 0.14),
+              ),
+            ],
+          ),
+        ),
+        const Expanded(child: ColoredBox(color: Color(0xFFF1F5F2))),
+      ],
+    );
+  }
+}
+
+class _CirculoDecorativoCitas extends StatelessWidget {
+  const _CirculoDecorativoCitas({
+    required this.diametro,
+    required this.opacidad,
+  });
+
+  final double diametro;
+  final double opacidad;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: diametro,
+      height: diametro,
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: opacidad),
+        shape: BoxShape.circle,
       ),
     );
   }
@@ -186,33 +249,6 @@ void _abrirDetalleCitaPreview(
   );
 }
 
-class _CurvaFondoCitasClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    path.moveTo(0, size.height * 0.19);
-    path.quadraticBezierTo(
-      size.width * 0.16,
-      size.height * 0.36,
-      size.width * 0.46,
-      size.height * 0.42,
-    );
-    path.quadraticBezierTo(
-      size.width * 0.78,
-      size.height * 0.49,
-      size.width,
-      size.height * 0.37,
-    );
-    path.lineTo(size.width, size.height);
-    path.lineTo(0, size.height);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
-}
-
 class _EncabezadoCitas extends StatelessWidget {
   const _EncabezadoCitas({required this.onVolver, required this.onNuevo});
 
@@ -221,47 +257,238 @@ class _EncabezadoCitas extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            _BotonEncabezadoIcono(onTap: onVolver),
+            const Spacer(),
+            FilledButton.icon(
+              onPressed: onNuevo,
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(118, 40),
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                backgroundColor: const Color(0xFF143B2A),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                side: const BorderSide(color: Color(0x88FFFFFF)),
+              ),
+              icon: const Icon(Icons.add_rounded, size: 18),
+              label: const Text(
+                'Nueva cita',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        const Text(
+          'Citas',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 33,
+            fontWeight: FontWeight.w900,
+            height: 1,
+          ),
+        ),
+        const SizedBox(height: 6),
+        const Text(
+          'Visualiza programacion diaria y seguimiento de agenda en tiempo real.',
+          style: TextStyle(
+            color: Color(0xFFE8F8EE),
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _BotonEncabezadoIcono extends StatelessWidget {
+  const _BotonEncabezadoIcono({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(13),
+        child: Ink(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: const Color(0x22FFFFFF),
+            borderRadius: BorderRadius.circular(13),
+            border: Border.all(color: const Color(0x55FFFFFF)),
+          ),
+          child: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Colors.white,
+            size: 18,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ResumenCitas extends StatelessWidget {
+  const _ResumenCitas({
+    required this.totalHoy,
+    required this.totalProximas,
+    required this.confirmadas,
+  });
+
+  final int totalHoy;
+  final int totalProximas;
+  final int confirmadas;
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       children: [
-        IconButton(
-          onPressed: onVolver,
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: Colors.black,
-            size: 22,
-          ),
-          visualDensity: VisualDensity.compact,
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
+        _TarjetaResumen(
+          etiqueta: 'Hoy',
+          valor: '$totalHoy',
+          icono: Icons.today_outlined,
         ),
         const SizedBox(width: 10),
-        const Expanded(
-          child: Text(
-            'Citas',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.2,
-              height: 1,
+        _TarjetaResumen(
+          etiqueta: 'Proximas',
+          valor: '$totalProximas',
+          icono: Icons.event_note_outlined,
+        ),
+        const SizedBox(width: 10),
+        _TarjetaResumen(
+          etiqueta: 'Confirmadas',
+          valor: '$confirmadas',
+          icono: Icons.check_circle_outline,
+        ),
+      ],
+    );
+  }
+}
+
+class _TarjetaResumen extends StatelessWidget {
+  const _TarjetaResumen({
+    required this.etiqueta,
+    required this.valor,
+    required this.icono,
+  });
+
+  final String etiqueta;
+  final String valor;
+  final IconData icono;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        decoration: BoxDecoration(
+          color: const Color(0x2FFFFFFF),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0x54FFFFFF)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icono, color: Colors.white, size: 18),
+            const SizedBox(height: 8),
+            Text(
+              valor,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              etiqueta,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Color(0xDBF4FFF7),
+                fontSize: 11.5,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SeccionAgenda extends StatelessWidget {
+  const _SeccionAgenda({
+    required this.titulo,
+    required this.cantidad,
+    required this.citas,
+    required this.bloqueAgenda,
+  });
+
+  final String titulo;
+  final int cantidad;
+  final List<CitaVistaMock> citas;
+  final String bloqueAgenda;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                titulo,
+                style: const TextStyle(
+                  color: Color(0xFF2A3F34),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: const Color(0xFFDDEDE5),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                '$cantidad',
+                style: const TextStyle(
+                  color: Color(0xFF2D7C62),
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        for (var i = 0; i < citas.length; i++) ...[
+          _TarjetaCita(
+            cita: citas[i],
+            onTap: () => _abrirDetalleCitaPreview(
+              context,
+              citas[i],
+              bloqueAgenda: bloqueAgenda,
             ),
           ),
-        ),
-        FilledButton(
-          onPressed: onNuevo,
-          style: FilledButton.styleFrom(
-            minimumSize: const Size(74, 30),
-            padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 2),
-            backgroundColor: AppColores.verdepacientes,
-            foregroundColor: Colors.white,
-            side: const BorderSide(color: Colors.black87, width: 1),
-            shape: const StadiumBorder(),
-          ),
-          child: const Text(
-            '+ nuevo',
-            style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
-          ),
-        ),
+          if (i < citas.length - 1) const SizedBox(height: 12),
+        ],
       ],
     );
   }
@@ -279,89 +506,106 @@ class _TarjetaCita extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(22),
-        child: Container(
-          constraints: const BoxConstraints(minHeight: 98),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-          decoration: BoxDecoration(
-            color: const Color(0xFFE8E8E8),
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: const Color(0xFF373737), width: 1.1),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: cita.cajaHoraColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(cita.icono, color: cita.iconoColor, size: 18),
-                    const SizedBox(height: 3),
-                    Text(
-                      cita.hora,
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w800,
-                        color: cita.horaColor,
-                        height: 1,
-                      ),
-                    ),
-                  ],
-                ),
+        borderRadius: BorderRadius.circular(18),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 112),
+          child: Ink(
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 11),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFFFFFFFF), Color(0xFFF0F7F3)],
               ),
-              const SizedBox(width: 13),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 4,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        Text(
-                          cita.nombreMascota,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: const Color(0xFFC7D8CE), width: 1),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 58,
+                  height: 58,
+                  decoration: BoxDecoration(
+                    color: cita.cajaHoraColor,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(cita.icono, color: cita.iconoColor, size: 19),
+                      const SizedBox(height: 4),
+                      Text(
+                        cita.hora,
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w800,
+                          color: cita.horaColor,
+                          height: 1,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              cita.nombreMascota,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Color(0xFF1E3027),
+                                fontSize: 17,
+                                fontWeight: FontWeight.w800,
+                                height: 1,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          _ChipEstado(cita: cita),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        cita.procedimiento,
+                        style: const TextStyle(
+                          color: Color(0xFF4B5F55),
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w700,
+                          height: 1,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 7,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE8F2ED),
+                          borderRadius: BorderRadius.circular(11),
+                        ),
+                        child: Text(
+                          cita.descripcion,
                           style: const TextStyle(
-                            color: Color(0xFF1D2730),
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            height: 1,
+                            color: Color(0xFF587066),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            height: 1.15,
                           ),
                         ),
-                        _ChipEstado(cita: cita),
-                      ],
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      cita.procedimiento,
-                      style: const TextStyle(
-                        color: Color(0xFF5E6970),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        height: 1,
                       ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      cita.descripcion,
-                      style: const TextStyle(
-                        color: Color(0xFF5E6970),
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        height: 1.05,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -377,10 +621,10 @@ class _ChipEstado extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
       decoration: BoxDecoration(
         color: cita.estadoBgColor,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
         cita.estado,
