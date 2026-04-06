@@ -19,18 +19,27 @@ class VistaPacientesAdmin extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF1F5F2),
+      floatingActionButton: SizedBox(
+        width: 62,
+        height: 62,
+        child: FloatingActionButton(
+          onPressed: () => _abrirRegistroPaciente(context),
+          backgroundColor: const Color(0xFF1E6246),
+          foregroundColor: Colors.white,
+          child: const Icon(Icons.add, size: 34),
+        ),
+      ),
       body: SafeArea(
         child: Stack(
           children: [
             const Positioned.fill(child: _FondoPacientes()),
             SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 100),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _Encabezado(
                     onVolver: () => Navigator.of(context).pop(),
-                    onNuevo: () => _abrirRegistroPaciente(context),
                   ),
                   const SizedBox(height: 14),
                   _ResumenPacientes(
@@ -246,40 +255,16 @@ void _abrirDetallePacientePreview(
 }
 
 class _Encabezado extends StatelessWidget {
-  const _Encabezado({required this.onVolver, required this.onNuevo});
+  const _Encabezado({required this.onVolver});
 
   final VoidCallback onVolver;
-  final VoidCallback onNuevo;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            _BotonEncabezadoIcono(onTap: onVolver),
-            const Spacer(),
-            FilledButton.icon(
-              onPressed: onNuevo,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size(96, 40),
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                backgroundColor: const Color(0xFF143B2A),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                side: const BorderSide(color: Color(0x88FFFFFF)),
-              ),
-              icon: const Icon(Icons.add_rounded, size: 18),
-              label: const Text(
-                'Nuevo',
-                style: TextStyle(fontWeight: FontWeight.w700),
-              ),
-            ),
-          ],
-        ),
+        _BotonEncabezadoIcono(onTap: onVolver),
         const SizedBox(height: 12),
         const Text(
           'Pacientes',
